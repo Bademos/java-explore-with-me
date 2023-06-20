@@ -5,5 +5,6 @@ public class ConstantsShare {
     public static final String statAddr = "/stats";
     public static final String datePattern = "yyyy-MM-dd HH:mm:ss";
 
-    private ConstantsShare() {}
+    private ConstantsShare() {
+    }
 }
