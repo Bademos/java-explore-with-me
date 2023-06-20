@@ -28,11 +28,10 @@ public class StatServerController {
     }
 
     @PostMapping(ConstantsShare.hitAddr)
-    public String addHit(@RequestBody @Valid HitDto hitDto) {
+    public void addHit(@RequestBody @Valid HitDto hitDto) {
         Hit hit = HitMapper.makeHitFromHitDto(hitDto);
         log.info("Get request to add endpoint hit: {} in DB", hit);
         statService.addHit(hit);
-        return "Ok";
     }
 
     @GetMapping(ConstantsShare.statAddr)
