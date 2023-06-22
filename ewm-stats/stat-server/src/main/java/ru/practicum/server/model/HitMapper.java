@@ -8,7 +8,7 @@ public class HitMapper {
     public Hit makeHitFromHitDto(HitDto hitDto) {
         return Hit.builder().app(hitDto.getApp())
                 .uri(hitDto.getUri())
-                .ip(hitDto.getUri())
+                .ip(hitDto.getIp())
                 .timestamp(hitDto.getTimestamp())
                 .build();
     }
