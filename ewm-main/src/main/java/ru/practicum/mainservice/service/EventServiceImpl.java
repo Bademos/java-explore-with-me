@@ -159,21 +159,20 @@ public class EventServiceImpl implements EventService {
         }
 
         if (start == null && end == null) {
-            eventList = eventRepository.searchAllByAnnotationAndCategoryIdInAndStateIsAndEventDateIsAfter
-                    (query, categoryIds, State.PUBLISHED, LocalDateTime.now(), pageable);
+            eventList = eventRepository.searchAllByAnnotationAndCategoryIdInAndStateIsAndEventDateIsAfter(query,
+                    categoryIds, State.PUBLISHED, LocalDateTime.now(), pageable);
             if (eventList.size() == 0) {
-                eventList = eventRepository
-                        .searchAllByDescriptionAndCategoryIdInAndStateIsAndEventDateIsAfter
-                                (query, categoryIds, State.PUBLISHED, LocalDateTime.now(), pageable);
+                eventList = eventRepository.searchAllByDescriptionAndCategoryIdInAndStateIsAndEventDateIsAfter(query,
+                        categoryIds, State.PUBLISHED, LocalDateTime.now(), pageable);
             }
         } else {
             eventList = eventRepository
-                    .searchAllByAnnotationAndCategoryIdInAndStateIsAndEventDateIsAfterAndEventDateIsBefore
-                            (query, categoryIds, State.PUBLISHED, start, end, pageable);
+                    .searchAllByAnnotationAndCategoryIdInAndStateIsAndEventDateIsAfterAndEventDateIsBefore(query,
+                            categoryIds, State.PUBLISHED, start, end, pageable);
             if (eventList.size() == 0) {
                 eventList = eventRepository
-                        .searchAllByDescriptionAndCategoryIdInAndStateIsAndEventDateIsAfterAndEventDateIsBefore
-                                (query, categoryIds, State.PUBLISHED, start, end, pageable);
+                        .searchAllByDescriptionAndCategoryIdInAndStateIsAndEventDateIsAfterAndEventDateIsBefore(query,
+                                categoryIds, State.PUBLISHED, start, end, pageable);
             }
         }
 
@@ -220,9 +219,7 @@ public class EventServiceImpl implements EventService {
     private boolean checkEvent(Event event) {
         if (event.getState().equals(State.CANCELED)
                 || event.getState().equals(State.PENDING)) {
-            if (event.getEventDate().isAfter(LocalDateTime.now().plusHours(1))) {
-                return true;
-            }
+            return event.getEventDate().isAfter(LocalDateTime.now().plusHours(1));
         }
         return false;
     }
