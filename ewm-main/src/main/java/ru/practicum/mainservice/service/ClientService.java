@@ -28,7 +28,7 @@ import java.util.List;
 @Slf4j
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ClientService {
-    StatClient statClient = new StatClient("http://localhost:9090", new RestTemplateBuilder());
+    StatClient statClient = new StatClient("http://stats-server:9090", new RestTemplateBuilder());
     String appName = "ewm-main";
 
 
