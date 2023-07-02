@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.mainservice.MainConstantShare;
 import ru.practicum.mainservice.exceptions.ConflictException;
@@ -17,20 +16,15 @@ import ru.practicum.mainservice.models.event.EventMapper;
 import ru.practicum.mainservice.models.event.State;
 import ru.practicum.mainservice.models.event.dto.NewEventDto;
 import ru.practicum.mainservice.models.event.dto.UpdateEventAdminRequest;
-import ru.practicum.mainservice.models.event.dto.UpdateEventUserRequest;
-import ru.practicum.mainservice.models.location.LocationDto;
 import ru.practicum.mainservice.models.user.User;
-import ru.practicum.mainservice.models.user.UserMapper;
 import ru.practicum.mainservice.repository.CategoryRepository;
 import ru.practicum.mainservice.repository.EventRepository;
-import ru.practicum.mainservice.repository.LocationRepository;
 import ru.practicum.mainservice.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,7 +44,6 @@ public class EventServiceImpl implements EventService {
     public List<Event> getListOfEvents(int from, int size) {
         from /= size;
         PageRequest pr = PageRequest.of(from, size, MainConstantShare.sortDesc);
-
         return eventRepository.findAll(pr).stream().collect(Collectors.toList());
     }
 
@@ -59,7 +52,6 @@ public class EventServiceImpl implements EventService {
     public List<Event> getListOfEventsByUser(Long userID, int from, int size) {
         from /= size;
         PageRequest pr = PageRequest.of(from, size, MainConstantShare.sortDesc);
-
         return eventRepository.findByInitiatorId(userID, pr);
     }
 
@@ -73,12 +65,9 @@ public class EventServiceImpl implements EventService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("There no user with id:" + userId)
         );
-
         Category category = categoryRepository.findById(event.getCategory()).orElseThrow(
                 () -> new NotFoundException("There no user with id:" + event.getCategory())
         );
-
-
         Event eventToSave = EventMapper.makeEventFromDto(event);
         eventToSave.setInitiator(user);
         eventToSave.setCategory(category);
@@ -97,19 +86,13 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event patchEvent(Long eventId, UpdateEventAdminRequest updateEventAdminRequest) {
         Event event = getEvent(eventId);
-       if (event.getState().equals(State.PUBLISHED) || event.getState().equals(State.REJECTED)) {
+        if (event.getState().equals(State.PUBLISHED) || event.getState().equals(State.CANCELED)) {
             throw new ConflictException("The event had been published");
         }
 
-        /*Category category = categoryRepository.findById(updateEventAdminRequest.getCategory()).orElseThrow(
-                () -> new NotFoundException("Category with id" + updateEventAdminRequest.getCategory() + "is absent"));
-        */
-        boolean check = checkEvent(event);
-
-
         if (checkEvent(event)) {
             updateFields(updateEventAdminRequest, event);
-           return eventRepository.save(event);
+            return eventRepository.save(event);
         }
         return event;
     }
@@ -117,25 +100,9 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event getEventSt(Long eventId) {
         Event event = getEvent(eventId);
-        if (event.getViews() == null) event.setViews(0L);
-        event.setViews(event.getViews() + 1);
-        eventRepository.save(event);
+        //if (event.getViews() == null) event.setViews(0L);
         return event;
     }
-
-/*
-    //Господи, что я творю!!!
-    @Override
-    public Event patchEvent(Long eventId, UpdateEventUserRequest updateEventAdminRequest) {
-        Event event = getEvent(eventId);
-        if (event.getState().equals(State.PUBLISHED) || event.getState().equals(State.REJECTED)) {
-            throw new ConflictException("The event had been published");
-        }
-        boolean check = checkEvent(event);
-
-
-        return null;
-    }*/
 
     @Override
     public Event patchEventByUser(Long eventId, Long userId, UpdateEventAdminRequest upd) {
@@ -144,13 +111,9 @@ public class EventServiceImpl implements EventService {
         );
         Event event = getEvent(eventId);
 
-        if(!Objects.equals(event.getInitiator().getId(), userId)) {
+        if (!Objects.equals(event.getInitiator().getId(), userId)) {
             throw new NotAvailableException("Event with id:" + eventId + " cannot  be edited by user with id:" + userId);
         }
-
-        /*if (!upd.getStateAction().equals("CANCEL_REVIEW") &&  !upd.getStateAction().equals("PUBLISH_EVENT")) {
-           throw new ConflictException("Forbidden operation");
-        }*/
 
         if (!event.getState().equals(State.PUBLISHED)) {
             updateFields(upd, event);
@@ -162,17 +125,38 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<Event> searchEvents(String query, List<Long> categoryIds, Boolean pais, LocalDateTime start,
-                                            LocalDateTime end, Boolean onlyAvailable, String sort, Integer from,
-                                            Integer size) {
-        Pageable pageable = PageRequest.of(from/size, size);
+                                    LocalDateTime end, Boolean onlyAvailable, String sort, Integer from,
+                                    Integer size) {
+        Pageable pageable = PageRequest.of(from / size, size);
+
+        if (query == null && pais == null
+                && start == null && end == null
+                && onlyAvailable == null && sort == null
+                && categoryIds == null) {
+            return eventRepository.findAll(pageable).toList();
+        }
+
+        if (query == null && pais == null && start == null && end == null
+                && onlyAvailable == null
+                && sort == null
+                && categoryIds != null) {
+            return eventRepository.findAllByCategoryIdIn(categoryIds, pageable);
+        }
+
+        if (query == null && pais == null && onlyAvailable == null
+                && sort == null
+                && categoryIds != null) {
+            return eventRepository.findAllByCategoryIdIn(categoryIds, pageable);
+        }
+
         List<Event> eventList;
         List<Event> sortList = new ArrayList<>();
+
         if (start != null && end != null) {
             if (end.isBefore(start)) {
                 throw new NotAvailableException("Incorrect time range");
             }
         }
-
 
         if (start == null && end == null) {
             eventList = eventRepository.searchAllByAnnotationAndCategoryIdInAndStateIsAndEventDateIsAfter
@@ -193,9 +177,7 @@ public class EventServiceImpl implements EventService {
             }
         }
 
-
-
-        if ((Boolean) pais != null) {
+        if (pais != null) {
             if (pais) {
                 for (Event event : eventList) {
                     if (event.getPaid()) {
@@ -215,7 +197,7 @@ public class EventServiceImpl implements EventService {
             }
         }
 
-        if ((Boolean) onlyAvailable != null) {
+        if (onlyAvailable != null) {
             if (onlyAvailable) {
                 for (Event event : eventList) {
                     if (event.getConfirmedRequests() < event.getParticipantLimit()) {
@@ -229,7 +211,6 @@ public class EventServiceImpl implements EventService {
         return eventList;
     }
 
-
     @Override
     public void deleteEvent(Long id) {
         getEvent(id);
@@ -237,23 +218,21 @@ public class EventServiceImpl implements EventService {
     }
 
     private boolean checkEvent(Event event) {
-        //boolean check = false;
         if (event.getState().equals(State.CANCELED)
                 || event.getState().equals(State.PENDING)) {
             if (event.getEventDate().isAfter(LocalDateTime.now().plusHours(1))) {
-                //check = true;
                 return true;
             }
         }
         return false;
     }
 
-    private void updateFields( UpdateEventAdminRequest upd, Event event) {
+    private void updateFields(UpdateEventAdminRequest upd, Event event) {
         Category newCategory = event.getCategory();
         checkUpdatedTime(upd);
 
         if (upd.getCategory() != null) {
-             newCategory = categoryRepository.findById(upd.getCategory()).orElseThrow(
+            newCategory = categoryRepository.findById(upd.getCategory()).orElseThrow(
                     () -> new NotFoundException("Category with id" + upd.getCategory() + "is absent"));
         }
         String stateAction = upd.getStateAction();
@@ -261,7 +240,8 @@ public class EventServiceImpl implements EventService {
         if (stateAction != null) {
             if (stateAction.equals("CANCEL_REVIEW")) event.setState(State.CANCELED);
             if (stateAction.equals("PUBLISH_EVENT")) event.setState(State.PUBLISHED);
-            if (stateAction.equals("REJECT_EVENT")) event.setState(State.REJECTED);
+            if (stateAction.equals("REJECT_EVENT")) event.setState(State.CANCELED);
+            if (stateAction.equals("SEND_TO_REVIEW")) event.setState(State.PENDING);
         }
 
         if (!event.getState().equals(State.CANCELED)) {
@@ -286,11 +266,11 @@ public class EventServiceImpl implements EventService {
                 event.setLocation(event.getLocation());
             }
 
-            if ((Boolean) upd.isPaid() != null) event.setPaid(upd.isPaid());
+            if (upd.getPaid() != null) event.setPaid(upd.getPaid());
 
             if (upd.getParticipantLimit() != null) event.setParticipantLimit(upd.getParticipantLimit());
 
-            if ((Boolean) upd.isRequestModeration() != null) event.setRequestModeration(upd.isRequestModeration());
+            if (upd.getRequestModeration() != null) event.setRequestModeration(upd.getRequestModeration());
 
             if (upd.getParticipantLimit() != null) event.setParticipantLimit(event.getParticipantLimit());
 

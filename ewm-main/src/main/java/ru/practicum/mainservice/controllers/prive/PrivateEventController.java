@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainservice.exceptions.ConflictException;
-import ru.practicum.mainservice.exceptions.NotFoundException;
 import ru.practicum.mainservice.models.event.Event;
 import ru.practicum.mainservice.models.event.dto.*;
 import ru.practicum.mainservice.models.event.EventMapper;
@@ -15,10 +14,8 @@ import ru.practicum.mainservice.models.request.EventRequestStatusUpdateRequest;
 import ru.practicum.mainservice.models.request.EventRequestStatusUpdateResult;
 import ru.practicum.mainservice.models.request.RequestDto;
 import ru.practicum.mainservice.models.request.RequestMapper;
-import ru.practicum.mainservice.models.user.User;
 import ru.practicum.mainservice.service.EventService;
 import ru.practicum.mainservice.service.RequestService;
-import ru.practicum.mainservice.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -32,15 +29,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/users/{userId}/events")
 public class PrivateEventController {
     EventService eventService;
-    UserService userService;
     RequestService requestService;
 
     @GetMapping
     public List<EventShortDto> getAllByUser(@PathVariable Long userId,
-                                 @RequestParam(name = "from", defaultValue = "0") int from,
-                                 @RequestParam(name = "size", defaultValue = "10") int size) {
-        //User user = userService.getUserById(userId);
-
+                                            @RequestParam(name = "from", defaultValue = "0") int from,
+                                            @RequestParam(name = "size", defaultValue = "10") int size) {
         return eventService.getListOfEventsByUser(userId, from, size).stream()
                 .map(EventMapper::makeShortDto)
                 .collect(Collectors.toList());
@@ -60,15 +54,15 @@ public class PrivateEventController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto addEvent(@PathVariable Long userId,
-                                  @RequestBody @Valid NewEventDto event) {
+                                 @RequestBody @Valid NewEventDto event) {
         log.info("Got request to create event:{}, by user with id:{}", event, userId);
         return EventMapper.makeFullDto(eventService.addEvent(event, userId));
     }
 
     @PatchMapping("/{eventId}")
     public EventFullDto updateEventByUser(@PathVariable Long userId,
-                                @PathVariable Long eventId,
-                                @RequestBody  @Valid UpdateEventAdminRequest upd) {
+                                          @PathVariable Long eventId,
+                                          @RequestBody @Valid UpdateEventAdminRequest upd) {
 
         log.info("Got request to patch event with id:{}, by user with id:{} and new category is {}", eventId, userId, upd.getCategory());
 
@@ -85,11 +79,10 @@ public class PrivateEventController {
                 .collect(Collectors.toList());
     }
 
-    @PatchMapping ("/{eventId}/requests")
+    @PatchMapping("/{eventId}/requests")
     public EventRequestStatusUpdateResult updateRequests(@PathVariable Long userId,
-                                                      @PathVariable  Long eventId, @RequestBody EventRequestStatusUpdateRequest request) {
+                                                         @PathVariable Long eventId, @RequestBody EventRequestStatusUpdateRequest request) {
         log.info("Got request for list of request of particapation in event with id:{}, created by user with id:{}", eventId, userId);
         return requestService.patchRequestsByUserIdAndEventId(userId, eventId, request);
     }
-
 }

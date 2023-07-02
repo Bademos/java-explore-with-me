@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 @Entity
-@Table(name="events",  schema="public")
+@Table(name = "events", schema = "public")
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,9 +68,9 @@ public class Event {
     @Enumerated(EnumType.STRING)
     State state;
 
-    @Column (name = "views")
+    @Column(name = "views")
     Long views;
 
-    @Column (name = "title")
+    @Column(name = "title")
     String title;
 }

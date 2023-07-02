@@ -1,6 +1,8 @@
 package ru.practicum.mainservice.models.category;
 
 import lombok.experimental.UtilityClass;
+import ru.practicum.mainservice.models.category.dto.CategoryDto;
+import ru.practicum.mainservice.models.category.dto.NewCategoryDto;
 
 @UtilityClass
 public class MakeCategory {
@@ -16,6 +18,4 @@ public class MakeCategory {
                 .name(category.getName())
                 .build();
     }
-
-
 }

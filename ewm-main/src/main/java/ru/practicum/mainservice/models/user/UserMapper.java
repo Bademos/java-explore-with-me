@@ -1,10 +1,6 @@
 package ru.practicum.mainservice.models.user;
 
 import lombok.experimental.UtilityClass;
-import org.springframework.data.domain.Page;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @UtilityClass
 public class UserMapper {
@@ -37,5 +33,4 @@ public class UserMapper {
                 .name(user.getName())
                 .build();
     }
-
 }

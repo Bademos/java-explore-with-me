@@ -3,7 +3,6 @@ package ru.practicum.mainservice.controllers.admin;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -25,6 +24,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("admin/users")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Validated
 public class AdminUsersController {
     UserService userService;
 

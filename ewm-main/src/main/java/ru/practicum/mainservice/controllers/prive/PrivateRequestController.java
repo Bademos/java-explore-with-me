@@ -32,15 +32,14 @@ public class PrivateRequestController {
     @ResponseStatus(HttpStatus.CREATED)
     public RequestDto addRequest(@PathVariable Long userId,
                                  @RequestParam(name = "eventId") Long eventId) {
-        log.info("Got request for paticipation request for user with id:{} and event with id:{}" , userId, eventId);
-        //if (eventId.equals(0L)) eventId = 1L;
+        log.info("Got request for paticipation request for user with id:{} and event with id:{}", userId, eventId);
         return RequestMapper.makeRequestDto(requestService.addRequest(eventId, userId));
     }
 
     @PatchMapping("/{requestId}/cancel")
     public RequestDto cancelRequest(@PathVariable Long userId,
                                     @PathVariable Long requestId) {
+        log.info("Got request for updating request for user with id:{} and event with id:{}", userId, requestId);
         return RequestMapper.makeRequestDto(requestService.cancelRequest(requestId, userId));
-
     }
 }

@@ -6,7 +6,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.mainservice.models.category.CategoryDto;
+import ru.practicum.mainservice.models.category.dto.CategoryDto;
 import ru.practicum.mainservice.models.category.MakeCategory;
 import ru.practicum.mainservice.service.CategoryService;
 
@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 @Validated
 public class PublicCategoriesController {
     CategoryService categoryService;
+
     @GetMapping
     public List<CategoryDto> getAll(@RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                     @RequestParam(defaultValue = "10") @Positive int size) {

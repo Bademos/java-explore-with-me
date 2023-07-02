@@ -3,7 +3,6 @@ package ru.practicum.mainservice.service;
 import ru.practicum.mainservice.models.event.Event;
 import ru.practicum.mainservice.models.event.dto.NewEventDto;
 import ru.practicum.mainservice.models.event.dto.UpdateEventAdminRequest;
-import ru.practicum.mainservice.models.event.dto.UpdateEventUserRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,18 +23,12 @@ public interface EventService {
     Event patchEvent(Long eventId, UpdateEventAdminRequest updateEventAdminRequest);
 
     Event getEventSt(Long eventId);
-   // Event patchEvent(Long eventId, UpdateEventUserRequest updateEventAdminRequest);
 
+    Event patchEventByUser(Long eventId, Long userId, UpdateEventAdminRequest updateEventAdminRequest);
 
-
-    Event patchEventByUser(Long eventId,Long userId, UpdateEventAdminRequest updateEventAdminRequest);
-
-
-
-
-    List<Event> searchEvents(String query, List<Long> categoryIds, Boolean pais, LocalDateTime start,
-                                    LocalDateTime end, Boolean onlyAvailable, String sort, Integer from,
-                                    Integer size);
+    List<Event> searchEvents(String query, List<Long> categoryIds, Boolean paid, LocalDateTime start,
+                             LocalDateTime end, Boolean onlyAvailable, String sort, Integer from,
+                             Integer size);
 
     void deleteEvent(Long id);
 }

@@ -1,21 +1,15 @@
 package ru.practicum.mainservice.service;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.mainservice.exceptions.ConflictException;
 import ru.practicum.mainservice.exceptions.NotFoundException;
 import ru.practicum.mainservice.models.user.User;
-import ru.practicum.mainservice.models.user.UserDto;
-import ru.practicum.mainservice.models.user.UserMapper;
 import ru.practicum.mainservice.repository.UserRepository;
 
 import java.util.Collections;
@@ -43,8 +37,8 @@ public class UserServiceImpl implements UserService {
     public List<User> getUserByListOfId(List<Long> list, int from, int size) {
         log.info("gettin usersby list id{}, from:{}, with size{}", list, from, size);
         from /= size;
-        PageRequest pr = PageRequest.of(from,size, Sort.by(Sort.Direction.ASC, "id"));
-        if(list == null) {
+        PageRequest pr = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "id"));
+        if (list == null) {
             return userRepository.findAll(pr).toList();
         }
         if (list.size() == 0) return Collections.emptyList();
@@ -57,7 +51,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User delete( Long id) {
+    public User delete(Long id) {
         User user = getUserById(id);
         userRepository.deleteById(id);
         return user;

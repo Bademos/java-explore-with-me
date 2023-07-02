@@ -4,21 +4,13 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.mainservice.models.category.Category;
-import ru.practicum.mainservice.models.event.Event;
+import ru.practicum.dto.ConstantsShare;
 import ru.practicum.mainservice.models.event.dto.EventFullDto;
-import ru.practicum.mainservice.models.event.dto.EventShortDto;
 import ru.practicum.mainservice.models.event.EventMapper;
-import ru.practicum.mainservice.models.event.State;
 import ru.practicum.mainservice.models.event.dto.UpdateEventAdminRequest;
-import ru.practicum.mainservice.models.location.Location;
-import ru.practicum.mainservice.models.user.User;
-import ru.practicum.mainservice.repository.CategoryRepository;
-import ru.practicum.mainservice.repository.LocationRepository;
-import ru.practicum.mainservice.repository.UserRepository;
 import ru.practicum.mainservice.service.EventService;
 
 import javax.validation.Valid;
@@ -36,7 +28,6 @@ import java.util.stream.Collectors;
 public class AdminEventController {
     EventService eventService;
 
-
     @PatchMapping("/{eventId}")
     public EventFullDto updateEvent(@PathVariable @Positive Long eventId,
                                     @RequestBody @Valid UpdateEventAdminRequest upd) {
@@ -45,12 +36,17 @@ public class AdminEventController {
     }
 
     @GetMapping
-    public List<EventFullDto> getAll(@RequestParam(name = "from", defaultValue = "0") int from,
-                                     @RequestParam(name = "size", defaultValue = "10") int size) {
+    public List<EventFullDto> getAllForAdmin(@RequestParam(name = "text", required = false) String text,
+                                             @RequestParam(name = "categories", required = false) List<Long> categories,
+                                             @RequestParam(name = "paid", required = false) Boolean paid,
+                                             @RequestParam(name = "rangeStart", required = false) @DateTimeFormat(pattern = ConstantsShare.datePattern) LocalDateTime rangeStart,
+                                             @RequestParam(name = "rangeEnd", required = false) @DateTimeFormat(pattern = ConstantsShare.datePattern) LocalDateTime rangeEnd,
+                                             @RequestParam(name = "onlyAvailable", required = false) Boolean onlyAvailable,
+                                             @RequestParam(name = "sort", required = false) String sort,
+                                             @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                             @RequestParam(name = "size", defaultValue = "10") Integer size) {
         log.info("got request for list of events");
-        log.info ("upsettable result:{}", eventService.getListOfEvents(from, size));
-       // log.info("hoooooooli:{}", eventService.getListOfEvents(from, size).get(0).getLocation());
-        return eventService.getListOfEvents(from, size).stream()
+        return eventService.searchEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size).stream()
                 .map(EventMapper::makeFullDto)
                 .collect(Collectors.toList());
     }

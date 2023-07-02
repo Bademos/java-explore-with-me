@@ -6,5 +6,5 @@ public enum State {
     CANCELED,
     CONFIRMED,
     REJECTED,
-    UNKNOWN;
+    UNKNOWN
 }

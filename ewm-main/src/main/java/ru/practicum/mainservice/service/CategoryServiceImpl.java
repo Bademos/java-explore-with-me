@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.mainservice.exceptions.ConflictException;
 import ru.practicum.mainservice.exceptions.NotFoundException;
 import ru.practicum.mainservice.models.category.Category;
-import ru.practicum.mainservice.models.category.CategoryDto;
+import ru.practicum.mainservice.models.category.dto.CategoryDto;
 import ru.practicum.mainservice.repository.CategoryRepository;
 import ru.practicum.mainservice.repository.EventRepository;
 
@@ -22,10 +22,11 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
     CategoryRepository categoryRepository;
     EventRepository eventRepository;
+
     @Override
     public List<Category> getCategories(int from, int size) {
         from /= size;
-        PageRequest pr = PageRequest.of(from,size, Sort.by(Sort.Direction.DESC, "id"));
+        PageRequest pr = PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "id"));
         return categoryRepository.findAll(pr).toList();
     }
 
@@ -39,7 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category updateCategory(CategoryDto category, Long catId ) {
+    public Category updateCategory(CategoryDto category, Long catId) {
         if (categoryRepository.existsByIdNotAndName(catId, category.getName())) {
             throw new ConflictException("Category with the name already exist");
         }
@@ -51,11 +52,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category addCategory(Category category) {
-       try {
-           return categoryRepository.save(category);
-       } catch (DataIntegrityViolationException ex) {
-           throw new ConflictException("The name already used");
-       }
+        try {
+            return categoryRepository.save(category);
+        } catch (DataIntegrityViolationException ex) {
+            throw new ConflictException("The name already used");
+        }
     }
 
     @Override

@@ -1,7 +1,7 @@
 package ru.practicum.mainservice.service;
 
 import ru.practicum.mainservice.models.compilation.Compilation;
-import ru.practicum.mainservice.models.compilation.CompilationDtoIn;
+import ru.practicum.mainservice.models.compilation.dto.CompilationDtoUpd;
 
 import java.util.List;
 
@@ -14,8 +14,7 @@ public interface CompilationService {
 
     Compilation updateCompilation(Compilation compilation);
 
-    Compilation updateCompilation(CompilationDtoIn compilation, Long compId);
-
+    Compilation updateCompilation(CompilationDtoUpd compilation, Long compId);
 
     Compilation deleteCompilation(Long id);
 }

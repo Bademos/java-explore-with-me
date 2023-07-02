@@ -1,9 +1,8 @@
-package ru.practicum.mainservice.models.category;
+package ru.practicum.mainservice.models.category.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -16,6 +15,6 @@ public class CategoryDto {
     Long id;
 
     @NotBlank
-    @Size(max=50)
+    @Size(max = 50)
     String name;
 }

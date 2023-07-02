@@ -1,4 +1,4 @@
-package ru.practicum.mainservice.exceptions;
+package ru.practicum.server.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,6 +21,8 @@ public class ExceptionsHandler {
                 .timestamp(LocalDateTime.now())
                 .message(e.getMessage())
                 .build();
+        //return new ResponseEntity<>(Map.of("message", e.getMessage()),
+        //        HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler

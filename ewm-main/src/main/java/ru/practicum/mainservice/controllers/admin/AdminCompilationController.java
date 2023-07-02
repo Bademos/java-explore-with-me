@@ -6,10 +6,10 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.mainservice.models.compilation.Compilation;
-import ru.practicum.mainservice.models.compilation.CompilationDtoIn;
-import ru.practicum.mainservice.models.compilation.CompilationDtoOut;
-import ru.practicum.mainservice.models.compilation.CompilationMapper;
+import ru.practicum.mainservice.models.compilation.*;
+import ru.practicum.mainservice.models.compilation.dto.CompilationDtoIn;
+import ru.practicum.mainservice.models.compilation.dto.CompilationDtoOut;
+import ru.practicum.mainservice.models.compilation.dto.CompilationDtoUpd;
 import ru.practicum.mainservice.models.event.Event;
 import ru.practicum.mainservice.service.CompilationService;
 import ru.practicum.mainservice.service.EventService;
@@ -31,7 +31,7 @@ public class AdminCompilationController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CompilationDtoOut addCompilation(@RequestBody @Valid CompilationDtoIn compilationDtoIn) {
-        if(compilationDtoIn.getEvents() != null) {
+        if (compilationDtoIn.getEvents() != null) {
             Set<Event> events = compilationDtoIn
                     .getEvents()
                     .stream()
@@ -46,9 +46,11 @@ public class AdminCompilationController {
 
     @PatchMapping("/{compId}")
     public CompilationDtoOut updateCompilation(@PathVariable Long compId,
-                                               @RequestBody @Valid CompilationDtoIn compilationDtoIn) {
+                                               @RequestBody @Valid CompilationDtoUpd compilationDtoIn) {
+        log.info("get updating {} for compilation with id{}", compilationDtoIn, compId);
         return CompilationMapper.makeDtoFromCompilation(compilationService.updateCompilation(compilationDtoIn, compId));
     }
+
     @DeleteMapping("/{compId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCompilation(@PathVariable Long compId) {

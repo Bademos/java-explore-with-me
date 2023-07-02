@@ -13,10 +13,10 @@ import java.util.Set;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByInitiatorId(Long userId, Pageable pageRequest);
+
     Set<Event> findAllByIdIn(List<Long> idList);
 
     List<Event> findAllByCategoryId(Long categoryId);
-
 
     Event findByIdAndInitiatorId(Long id, Long eventId);
 
@@ -28,10 +28,15 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     List<Event> searchAllByAnnotationAndCategoryIdInAndStateIsAndEventDateIsAfterAndEventDateIsBefore(
             String query, List<Long> categoryId, State state, LocalDateTime start, LocalDateTime end, Pageable pageable);
+
     List<Event> searchAllByDescriptionAndCategoryIdInAndStateIsAndEventDateIsAfterAndEventDateIsBefore(
             String query, List<Long> categoryId, State state, LocalDateTime start, LocalDateTime end, Pageable pageable);
+
     List<Event> searchAllByAnnotationAndCategoryIdInAndStateIsAndEventDateIsAfter(
-            String query, List<Long> categoryId, State state, LocalDateTime start,  Pageable pageable);
+            String query, List<Long> categoryId, State state, LocalDateTime start, Pageable pageable);
+
     List<Event> searchAllByDescriptionAndCategoryIdInAndStateIsAndEventDateIsAfter(
             String query, List<Long> categoryId, State state, LocalDateTime start, Pageable pageable);
+
+    List<Event> findAllByCategoryIdIn(List<Long> ids, Pageable pageRequest);
 }

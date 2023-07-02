@@ -30,11 +30,15 @@ public class StatServiceImplementation implements StatService {
     @Override
     public List<ViewStatDto> getStat(LocalDateTime start, LocalDateTime end,
                                      List<String> uris, boolean unique) {
+        List<ViewStatDto> res;
         if (unique) {
-            log.info("Get request for statistics of unique uri in list {}", uris);
-            return hitRepository.getUniqueHits(start, end, uris);
+            log.info("Get request for statistics of unique uri in list {}", uris.get(0));
+            res = hitRepository.getUniqueHits(start, end, uris);
+            return res;
         }
         log.info("Get request for statistics of all uri in list {}", uris);
-        return hitRepository.getHits(start, end, uris);
+        res =  hitRepository.getHits(start, end, uris);
+        log.info("result:{}", res);
+        return res;
     }
 }

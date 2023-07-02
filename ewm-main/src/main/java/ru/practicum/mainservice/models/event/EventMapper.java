@@ -2,7 +2,6 @@ package ru.practicum.mainservice.models.event;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.mainservice.models.category.MakeCategory;
-import ru.practicum.mainservice.models.event.dto.EventDto;
 import ru.practicum.mainservice.models.event.dto.EventFullDto;
 import ru.practicum.mainservice.models.event.dto.EventShortDto;
 import ru.practicum.mainservice.models.event.dto.NewEventDto;
@@ -14,16 +13,6 @@ import java.time.LocalDateTime;
 
 @UtilityClass
 public class EventMapper {
-    public EventDto makeEventDto(Event event) {
-        return EventDto.builder()
-                .id(event.getId())
-                .description(event.getDescription())
-                .location(makeDtoFromLocation(event.getLocation()))
-                .state(event.getState().toString())
-                .build();
-    }
-
-
     public Event makeEventFromDto(NewEventDto newEventDto) {
         return Event.builder()
                 .state(State.PENDING)
@@ -59,9 +48,6 @@ public class EventMapper {
                 .views(event.getViews())
                 .title(event.getTitle())
                 .build();
-
-
-
     }
 
     public EventShortDto makeShortDto(Event event) {
@@ -80,7 +66,6 @@ public class EventMapper {
 
     public LocationDto makeDtoFromLocation(Location location) {
         return LocationDto.builder()
-                //.id(location.getId())
                 .lat(location.getLat())
                 .lon(location.getLon())
                 .build();
@@ -92,6 +77,4 @@ public class EventMapper {
                 .lon(locationDto.getLon())
                 .build();
     }
-
-
 }

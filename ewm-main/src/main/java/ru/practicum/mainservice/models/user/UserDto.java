@@ -5,7 +5,6 @@ import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
@@ -13,7 +12,6 @@ import javax.validation.constraints.NotNull;
 @Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDto {
-
     Long id;
 
     @NotBlank

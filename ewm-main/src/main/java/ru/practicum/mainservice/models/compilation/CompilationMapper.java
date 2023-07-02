@@ -1,6 +1,8 @@
 package ru.practicum.mainservice.models.compilation;
 
 import lombok.experimental.UtilityClass;
+import ru.practicum.mainservice.models.compilation.dto.CompilationDtoIn;
+import ru.practicum.mainservice.models.compilation.dto.CompilationDtoOut;
 import ru.practicum.mainservice.models.event.Event;
 import ru.practicum.mainservice.models.event.EventMapper;
 

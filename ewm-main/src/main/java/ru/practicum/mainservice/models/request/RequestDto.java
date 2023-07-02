@@ -4,11 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.dto.ConstantsShare;
-import ru.practicum.mainservice.models.event.Event;
-import ru.practicum.mainservice.models.event.State;
-import ru.practicum.mainservice.models.user.User;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data

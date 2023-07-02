@@ -1,37 +1,31 @@
 package ru.practicum.mainservice.models.event.dto;
 
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import ru.practicum.mainservice.models.location.Location;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateEventUserRequest {
-    private String annotation;
+    String annotation;
 
-    private Long category;
+    Long category;
 
-    private String description;
+    String description;
 
-    private String eventDate;
+    String eventDate;
 
-    private Location location;
+    Location location;
 
-    private boolean paid;
+    Boolean paid;
 
-    private Integer participantLimit;
+    Integer participantLimit;
 
-    private boolean requestModeration;
+    Boolean requestModeration;
 
-    private String stateAction;
+    String stateAction;
 
-    private String title;
-
-    public boolean isPaid() {
-        return paid;
-    }
-
-    public boolean isRequestModeration() {
-        return requestModeration;
-    }
+    String title;
 }

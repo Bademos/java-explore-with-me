@@ -7,7 +7,6 @@ import org.hibernate.annotations.OnDeleteAction;
 import ru.practicum.mainservice.models.event.Event;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
 
 @Data

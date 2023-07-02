@@ -8,9 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainservice.models.category.Category;
-import ru.practicum.mainservice.models.category.CategoryDto;
+import ru.practicum.mainservice.models.category.dto.CategoryDto;
 import ru.practicum.mainservice.models.category.MakeCategory;
-import ru.practicum.mainservice.models.category.NewCategoryDto;
+import ru.practicum.mainservice.models.category.dto.NewCategoryDto;
 import ru.practicum.mainservice.service.CategoryService;
 
 import javax.validation.Valid;
@@ -34,16 +34,16 @@ public class AdminCategoriesController {
         return MakeCategory.makeDtoFromCategory(categoryService.addCategory(category));
     }
 
-     @PatchMapping("/{id}")
+    @PatchMapping("/{id}")
     public CategoryDto updateCategory(@Positive @PathVariable Long id, @RequestBody @Valid CategoryDto categoryDto) {
         log.info("Got request for patching {}", categoryDto.getName());
         return MakeCategory.makeDtoFromCategory(categoryService.updateCategory(categoryDto, id));
-     }
+    }
 
-     @DeleteMapping("/{id}")
-     @ResponseStatus(HttpStatus.NO_CONTENT)
-     public void deleteCategory(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCategory(@PathVariable Long id) {
         log.info("Got request to delete category with id:{}", id);
         categoryService.deleteCategory(id);
-     }
+    }
 }

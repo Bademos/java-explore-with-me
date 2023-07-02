@@ -21,7 +21,6 @@ import ru.practicum.mainservice.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,8 +36,6 @@ public class RequestServiceImpl implements RequestService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("User does not found")
         );
-
-
         return requestRepository.findAllByRequesterId(userId);
     }
 
@@ -68,7 +65,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public Request addRequest(Long eventId, Long userId) {
 
-        log.info("Got request for paticipation request for user with id:{} and event with id:{}" , userId, eventId);
+        log.info("Got request for paticipation request for user with id:{} and event with id:{}", userId, eventId);
 
         Event event = eventRepository.findById(eventId).orElseThrow(
                 () -> new NotFoundException("Event does not found")
@@ -85,41 +82,30 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictException("The event is published");
         }
 
-
-        //if (event.getParticipantLimit() >=0 && event.getParticipantLimit() <= event.getConfirmedRequests().intValue()) {
-        //    throw new ConflictException( "There is request limit is over");
-        //}
-
         if (event.getParticipantLimit() != 0 && event.getParticipantLimit() <= event.getConfirmedRequests())
-            throw new ConflictException("достигнут лимит запросов на участие");
-
-
+            throw new ConflictException("Limit of paticipiants is over");
 
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("User does not found")
         );
         log.info("User with id {} found , his name is ", userId, user.getName());
 
-
-
         if (!userId.equals(event.getInitiator().getId())) {
             Request request = Request.builder()
                     .requester(user)
                     .status(State.PENDING)
-                    //.status((event.getParticipantLimit() == 0) || (!event.getRequestModeration())
-                    //        ? State.CONFIRMED
-                    //        : State.PENDING
-                    //)
                     .event(event)
                     .created(LocalDateTime.now())
                     .build();
-            request =  requestRepository.save(request);
-            /*if (request.getStatus().equals(State.CONFIRMED)) {
+
+            State requestStatus = (!event.getRequestModeration() || event.getParticipantLimit() == 0)
+                    ? State.CONFIRMED : State.PENDING;
+
+            request.setStatus(requestStatus);
+            if (requestStatus.equals(State.CONFIRMED)) {
                 event.setConfirmedRequests(event.getConfirmedRequests() + 1);
-                eventRepository.save(event);
-            }*/
-            //event.setConfirmedRequests(event.getConfirmedRequests() + 1);
-            //eventRepository.save(event);
+            }
+            request = requestRepository.save(request);
             return request;
         } else {
             throw new NotFoundException("The event was not initiated by user with id:" + userId);
@@ -128,70 +114,50 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public EventRequestStatusUpdateResult patchRequestsByUserIdAndEventId(Long userId, Long eventId, EventRequestStatusUpdateRequest updateRequest) {
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found."));
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event not found"));
-        /*if(event.getState().equals(State.CONFIRMED)) {
-            throw new ConflictException("");
-        }*/
 
-        if (event.getParticipantLimit() == null) event.setParticipantLimit(0);
-        if (event.getConfirmedRequests() == null) event.setConfirmedRequests(0L);;
-        if (event.getParticipantLimit() >=0 && event.getParticipantLimit() <= event.getConfirmedRequests().intValue()) {
-            throw new ConflictException( "There is request limit is over");
+
+        List<Request> requestsEvent = requestRepository.findAllByEventId(eventId);
+
+        if (event.getParticipantLimit() <= requestRepository.countByEventIdAndStatus(eventId, State.CONFIRMED)) {
+            throw new ConflictException("Limit of paticipiants is over");
         }
 
+        EventRequestStatusUpdateResult eventRequestStatusUpdateResultDto = EventRequestStatusUpdateResult.builder()
+                .confirmedRequests(new ArrayList<>())
+                .rejectedRequests(new ArrayList<>())
+                .build();
 
-        List<Request> eventRequestList = requestRepository.findByIdIn((updateRequest.getRequestIds()));
-        List<Request> confirmedRequests = new ArrayList<>();
-        List<Request> rejectedRequests = new ArrayList<>();
-        EventRequestStatusUpdateResult updateResult = new EventRequestStatusUpdateResult();
-
-        if (event.getParticipantLimit() == null) event.setParticipantLimit(0);
-        if (event.getConfirmedRequests() == null) event.setConfirmedRequests(0L);
-
-
-
-        if (updateRequest.getStatus().equals(State.REJECTED)) {
-            for (Request eventRequest : eventRequestList) {
-                eventRequest.setStatus(State.REJECTED);
-                rejectedRequests.add(eventRequest);
+        List<Request> requestListUpdateStatus = new ArrayList<>();
+        for (Request request : requestsEvent) {
+            if (updateRequest.getRequestIds().contains(request.getId())) {
+                request.setStatus(updateRequest.getStatus());
+                event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+                requestListUpdateStatus.add(request);
             }
         }
-
-        if (event.getParticipantLimit() == 0) {
-            confirmedRequests.addAll(eventRequestList);
-            updateResult.setConfirmedRequests(confirmedRequests.stream().map(RequestMapper::makeRequestDto).collect(Collectors.toList()));
-            return updateResult;
-        }
-        for (Request eventRequest : eventRequestList) {
-
-
-            if (event.getParticipantLimit() >=0 && event.getParticipantLimit() <= event.getConfirmedRequests().intValue()) {
-                throw new ConflictException( "There is request limit is over");
-            }
-
-            if (event.getConfirmedRequests().intValue() <= event.getParticipantLimit()) {
-                if (eventRequest.getStatus().equals(State.PENDING)) {
-                    eventRequest.setStatus(State.CONFIRMED);
-                    confirmedRequests.add(eventRequest);
-                    //event.setParticipantLimit(event.getParticipantLimit() + 1);
-                    event.setConfirmedRequests(event.getConfirmedRequests() + 1);
-
-                }
+        for (Request request : requestListUpdateStatus) {
+            if (!request.getStatus().equals(State.CANCELED)) {
+                eventResultConstructor(eventRequestStatusUpdateResultDto, request);
             } else {
-                eventRequest.setStatus(State.REJECTED);
-                rejectedRequests.add(eventRequest);
+                throw new ConflictException("Error");
             }
         }
-        updateResult.setConfirmedRequests(confirmedRequests.stream().map(RequestMapper::makeRequestDto).collect(Collectors.toList()));
-        updateResult.setRejectedRequests(rejectedRequests.stream().map(RequestMapper::makeRequestDto).collect(Collectors.toList()));
+        requestRepository.saveAll(requestListUpdateStatus);
         eventRepository.save(event);
-        return updateResult;
+        return eventRequestStatusUpdateResultDto;
     }
 
+    private void eventResultConstructor(EventRequestStatusUpdateResult eventRequestStatusUpdateResult, Request request) {
+        if (request.getStatus().equals(State.CONFIRMED)) {
+            eventRequestStatusUpdateResult.getConfirmedRequests().add(RequestMapper.makeRequestDto(request));
+        } else if (request.getStatus().equals(State.REJECTED)) {
+            eventRequestStatusUpdateResult.getRejectedRequests().add(RequestMapper.makeRequestDto(request));
+        }
+    }
 
     private Request getRequestById(Long requestId) {
         return requestRepository.findById(requestId).orElseThrow(

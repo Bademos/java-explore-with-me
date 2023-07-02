@@ -2,50 +2,40 @@ package ru.practicum.mainservice.models.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import ru.practicum.dto.ConstantsShare;
 import ru.practicum.mainservice.models.location.Location;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateEventAdminRequest {
-    //@NotBlank
     @Size(min = 20, max = 2000)
-    private String annotation;
+    String annotation;
 
-    private Long category;
+    Long category;
 
-    //@NotBlank
     @Size(min = 20, max = 7000)
-    private String description;
+    String description;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ConstantsShare.datePattern)
-    private LocalDateTime eventDate;
+    LocalDateTime eventDate;
 
-    private Location location;
+    Location location;
 
-    private boolean paid;
+    Boolean paid;
 
-    private Integer participantLimit;
+    Integer participantLimit;
 
-    private boolean requestModeration;
+    Boolean requestModeration;
 
-    private String stateAction;
+    String stateAction;
 
-    //@NotBlank
     @Size(min = 3, max = 120)
-    private String title;
-
-    public boolean isPaid() {
-        return paid;
-    }
-
-    public boolean isRequestModeration() {
-        return requestModeration;
-    }
+    String title;
 }
