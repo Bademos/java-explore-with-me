@@ -28,9 +28,9 @@ public class AdminCategoriesController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CategoryDto addCategory(@RequestBody @Valid NewCategoryDto сategoryDto) {
-        Category category = MakeCategory.makeCategoryFromNewDto(сategoryDto);
-        log.info("Got reguest to add new category:{}", сategoryDto);
+    public CategoryDto addCategory(@RequestBody @Valid NewCategoryDto dto) {
+        Category category = MakeCategory.makeCategoryFromNewDto(dto);
+        log.info("Got reguest to add new category:{}", dto);
         return MakeCategory.makeDtoFromCategory(categoryService.addCategory(category));
     }
 
