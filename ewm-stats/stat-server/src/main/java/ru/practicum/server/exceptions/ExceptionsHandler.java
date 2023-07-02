@@ -21,8 +21,6 @@ public class ExceptionsHandler {
                 .timestamp(LocalDateTime.now())
                 .message(e.getMessage())
                 .build();
-        //return new ResponseEntity<>(Map.of("message", e.getMessage()),
-        //        HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
@@ -32,18 +30,6 @@ public class ExceptionsHandler {
         return ApiError.builder()
                 .reason(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .status(HttpStatus.BAD_REQUEST.value())
-                .message(e.getMessage())
-                .timestamp(LocalDateTime.now())
-                .build();
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ApiError handleConflictException(final ConflictException e) {
-        log.error("There is conflict exception{}", e);
-        return ApiError.builder()
-                .reason(HttpStatus.CONFLICT.getReasonPhrase())
-                .status(HttpStatus.CONFLICT.value())
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now())
                 .build();
