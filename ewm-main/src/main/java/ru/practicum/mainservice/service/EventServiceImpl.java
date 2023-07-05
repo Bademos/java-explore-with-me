@@ -215,15 +215,7 @@ public class EventServiceImpl implements EventService {
         }
         String stateAction = upd.getStateAction();
 
-        if (stateAction != null) {
-            if (stateAction.equals(PreState.REJECT_EVENT.toString())) event.setState(State.CANCELED);
-            if (stateAction.equals(PreState.PUBLISH_EVENT.toString())) {
-                event.setState(State.PUBLISHED);
-                event.setPublishedOn(LocalDateTime.now());
-            }
-            if (stateAction.equals(PreState.CANCEL_REVIEW.toString())) event.setState(State.CANCELED);
-            if (stateAction.equals(PreState.SEND_TO_REVIEW.toString())) event.setState(State.PENDING);
-        }
+        setState(stateAction, event);
 
         if (!event.getState().equals(State.CANCELED)) {
 
@@ -278,32 +270,6 @@ public class EventServiceImpl implements EventService {
             }
         }
     }
-
-
-    private void handleMainRequest(EventDtoForSearch request, List<Event> eventList, List<Event> sortList, Pageable pageable) {
-        if (request.getStart() == null && request.getEnd() == null) {
-            eventList = eventRepository.searchAllByAnnotationAndCategoryIdInAndStateIsAndEventDateIsAfter(request.getQuery(),
-                    request.getCategoryId(), State.PUBLISHED, LocalDateTime.now(), pageable);
-            if (eventList.size() == 0) {
-                eventList = eventRepository.searchAllByDescriptionAndCategoryIdInAndStateIsAndEventDateIsAfter(request.getQuery(),
-                        request.getCategoryId(), State.PUBLISHED, LocalDateTime.now(), pageable);
-            }
-        } else {
-            eventList = eventRepository
-                    .searchAllByAnnotationAndCategoryIdInAndStateIsAndEventDateIsAfterAndEventDateIsBefore(request.getQuery(),
-                            request.getCategoryId(), State.PUBLISHED, request.getStart(), request.getEnd(), pageable);
-            if (eventList.size() == 0) {
-                eventList = eventRepository
-                        .searchAllByDescriptionAndCategoryIdInAndStateIsAndEventDateIsAfterAndEventDateIsBefore(request.getQuery(),
-                                request.getCategoryId(), State.PUBLISHED, request.getStart(), request.getEnd(), pageable);
-            }
-        }
-    }
-
-
-
-
-
 
     private void handleRequestNotAvailable(EventDtoForSearch request, List<Event> eventList, List<Event> sortList) {
         if (request.getOnlyAvailable() != null) {
