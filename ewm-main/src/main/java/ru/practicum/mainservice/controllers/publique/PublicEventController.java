@@ -14,7 +14,6 @@ import ru.practicum.mainservice.models.event.State;
 import ru.practicum.mainservice.models.event.dto.EventDtoForSearch;
 import ru.practicum.mainservice.models.event.dto.EventFullDto;
 import ru.practicum.mainservice.models.event.dto.EventShortDto;
-import ru.practicum.mainservice.service.ClientService;
 import ru.practicum.mainservice.service.EventService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +29,6 @@ import java.util.stream.Collectors;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class PublicEventController {
     EventService eventService;
-    //ClientService clientService;
 
     @GetMapping
     public List<EventShortDto> findEvents(@RequestParam(name = "text", required = false) String text,
@@ -58,9 +56,7 @@ public class PublicEventController {
                 .build();
         log.info("Got request for search events in range between {} and {}.Caterories for searching:{}", rangeStart, rangeEnd, categories);
         log.info("There is request:{}", request);
-       /* return eventService.searchEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size, httpRequest).stream()
-                .map(EventMapper::makeShortDto)
-                .collect(Collectors.toList());*/
+
         return eventService.searchEventsComp(request, httpRequest).stream()
                 .map(EventMapper::makeShortDto)
                 .collect(Collectors.toList());

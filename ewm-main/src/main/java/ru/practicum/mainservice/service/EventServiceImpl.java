@@ -51,14 +51,14 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<Event> getListOfEvents(int from, int size) {
-        PageRequest pr = PageRequest.of(from / size, size, MainConstantShare.SORT_DESC);
+        PageRequest pr = PageRequest.of(from / size, size, MainConstantShare.sortDesc);
         return eventRepository.findAll(pr).stream().collect(Collectors.toList());
     }
 
 
     @Override
     public List<Event> getListOfEventsByUser(Long userID, int from, int size) {
-        PageRequest pr = PageRequest.of(from / size, size, MainConstantShare.SORT_DESC);
+        PageRequest pr = PageRequest.of(from / size, size, MainConstantShare.sortDesc);
         return eventRepository.findByInitiatorId(userID, pr);
     }
 
@@ -133,96 +133,6 @@ public class EventServiceImpl implements EventService {
         } else {
             throw new ConflictException("Forbidden operation");
         }
-    }
-
-    @Override
-    public List<Event> searchEvents(String query, List<Long> categoryIds, Boolean paid, LocalDateTime start,
-                                    LocalDateTime end, Boolean onlyAvailable, String sort, Integer from,
-                                    Integer size, HttpServletRequest httpRequest) {
-        if (httpRequest != null) {
-            clientService.addView(httpRequest);
-        }
-        Pageable pageable = PageRequest.of(from / size, size);
-
-        if (query == null && paid == null
-                && start == null && end == null
-                && onlyAvailable == null && sort == null
-                && categoryIds == null) {
-            return eventRepository.findAll(pageable).toList();
-        }
-
-        if (query == null && paid == null && start == null && end == null
-                && onlyAvailable == null
-                && sort == null
-                && categoryIds != null) {
-            return eventRepository.findAllByCategoryIdIn(categoryIds, pageable);
-        }
-
-        if (query == null && paid == null && onlyAvailable == null
-                && sort == null
-                && categoryIds != null) {
-            return eventRepository.findAllByCategoryIdIn(categoryIds, pageable);
-        }
-
-        List<Event> eventList;
-        List<Event> sortList = new ArrayList<>();
-
-        if (start != null && end != null) {
-            if (end.isBefore(start)) {
-                throw new NotAvailableException("Incorrect time range");
-            }
-        }
-
-        if (start == null && end == null) {
-            eventList = eventRepository.searchAllByAnnotationAndCategoryIdInAndStateIsAndEventDateIsAfter(query,
-                    categoryIds, State.PUBLISHED, LocalDateTime.now(), pageable);
-            if (eventList.size() == 0) {
-                eventList = eventRepository.searchAllByDescriptionAndCategoryIdInAndStateIsAndEventDateIsAfter(query,
-                        categoryIds, State.PUBLISHED, LocalDateTime.now(), pageable);
-            }
-        } else {
-            eventList = eventRepository
-                    .searchAllByAnnotationAndCategoryIdInAndStateIsAndEventDateIsAfterAndEventDateIsBefore(query,
-                            categoryIds, State.PUBLISHED, start, end, pageable);
-            if (eventList.size() == 0) {
-                eventList = eventRepository
-                        .searchAllByDescriptionAndCategoryIdInAndStateIsAndEventDateIsAfterAndEventDateIsBefore(query,
-                                categoryIds, State.PUBLISHED, start, end, pageable);
-            }
-        }
-
-        if (paid != null) {
-            if (paid) {
-                for (Event event : eventList) {
-                    if (event.getPaid()) {
-                        sortList.add(event);
-                    }
-                }
-                eventList.clear();
-                eventList.addAll(sortList);
-            } else {
-                for (Event event : eventList) {
-                    if (!event.getPaid()) {
-                        sortList.add(event);
-                    }
-                }
-                eventList.clear();
-                eventList.addAll(sortList);
-            }
-        }
-
-        //if (onlyAvailable != null) {
-        if (onlyAvailable) {
-                for (Event event : eventList) {
-                    if (event.getConfirmedRequests() < event.getParticipantLimit()) {
-                        sortList.add(event);
-                    }
-                }
-                eventList.clear();
-                eventList.addAll(sortList);
-            }
-       // }
-        return eventList;
     }
 
     @Override
@@ -363,7 +273,7 @@ public class EventServiceImpl implements EventService {
 
     private static void checkUpdatedTime(UpdateEventAdminRequest updateEventAdminRequest) {
         if (updateEventAdminRequest.getEventDate() != null) {
-            if (LocalDateTime.now().plusHours(MainConstantShare.HOURS_AFTER_EVENT).isAfter(updateEventAdminRequest.getEventDate())) {
+            if (LocalDateTime.now().plusHours(MainConstantShare.housrsAfterEvent).isAfter(updateEventAdminRequest.getEventDate())) {
                 throw new NotAvailableException("Event time is too late");
             }
         }

@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.mainservice.MainConstantShare;
 import ru.practicum.mainservice.exceptions.NotFoundException;
@@ -32,8 +31,8 @@ public class CompilationServiceImpl implements CompilationService {
     public List<Compilation> getAllCompilation(Boolean pinned, int from, int size) {
 
         PageRequest pg = pinned == null
-                ? PageRequest.of(from/size, size)
-                : PageRequest.of(from/size, size, MainConstantShare.SORT_ASC);
+                ? PageRequest.of(from / size, size)
+                : PageRequest.of(from / size, size, MainConstantShare.sortAsc);
 
         return compilationRepository.findAll(pg).toList();
     }

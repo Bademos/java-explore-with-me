@@ -14,10 +14,8 @@ import ru.practicum.mainservice.models.event.EventMapper;
 import ru.practicum.mainservice.models.event.dto.UpdateEventAdminRequest;
 import ru.practicum.mainservice.service.EventService;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
-import java.net.http.HttpRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,8 +45,8 @@ public class AdminEventController {
                                              @RequestParam(name = "onlyAvailable", required = false) Boolean onlyAvailable,
                                              @RequestParam(name = "sort", required = false) String sort,
                                              @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                             @RequestParam(name = "size", defaultValue = "10") Integer size,
-                                             HttpServletRequest httpRequest) {
+                                             @RequestParam(name = "size", defaultValue = "10") Integer size
+                                             ) {
         log.info("got request for list of events");
         EventDtoForSearch request = EventDtoForSearch.builder()
                 .start(rangeStart)

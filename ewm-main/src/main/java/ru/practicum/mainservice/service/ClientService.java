@@ -6,7 +6,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
@@ -31,17 +30,10 @@ import java.util.List;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ClientService {
-    //@Value("${stats-server.url}") String url;
     @Value(value = "${app.name}")
     String appName;
 
-    final StatClient statClient = new StatClient(MainConstantShare.HTTP_SERVER_TEST, new RestTemplateBuilder());
-
-
-
-    //String appName = "ewm-main";
-
-
+    final StatClient statClient = new StatClient(MainConstantShare.httpServer, new RestTemplateBuilder());
 
     public void addView(HttpServletRequest request) {
         statClient.addHit(HitDto.builder()
@@ -54,7 +46,7 @@ public class ClientService {
 
     public ResponseEntity<Object> requestStatFromStatService(String uri) {
          GetStatDto viewStatsRequest = GetStatDto.builder()
-                 .start(MainConstantShare.START_DATE_STRING)
+                 .start(MainConstantShare.startDateString)
                  .end(LocalDateTime.now().format(DateTimeFormatter.ofPattern(ConstantsShare.datePattern)))
                  .uris(List.of(uri))
                  .unique(true)
