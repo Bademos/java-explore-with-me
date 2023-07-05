@@ -7,6 +7,7 @@ public enum PreState {
     REJECT_EVENT(State.CANCELED);
 
     private final State state;
+
     PreState(State state) {
         this.state = state;
     }

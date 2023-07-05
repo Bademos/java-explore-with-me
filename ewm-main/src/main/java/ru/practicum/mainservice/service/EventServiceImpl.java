@@ -143,7 +143,7 @@ public class EventServiceImpl implements EventService {
 
         timeRangeCheck(request);
 
-        Pageable pageable = PageRequest.of(request.getFrom()/ request.getSize(), request.getSize());
+        Pageable pageable = PageRequest.of(request.getFrom() / request.getSize(), request.getSize());
 
         if (request.getQuery() == null && request.getPaid() == null
                 && request.getStart() == null && request.getEnd() == null
@@ -217,7 +217,7 @@ public class EventServiceImpl implements EventService {
 
         if (stateAction != null) {
             if (stateAction.equals(PreState.REJECT_EVENT.toString())) event.setState(State.CANCELED);
-            if (stateAction.equals(PreState.PUBLISH_EVENT.toString())){
+            if (stateAction.equals(PreState.PUBLISH_EVENT.toString())) {
                 event.setState(State.PUBLISHED);
                 event.setPublishedOn(LocalDateTime.now());
             }
@@ -262,7 +262,7 @@ public class EventServiceImpl implements EventService {
     private void setState(String stateAction, Event event) {
         if (stateAction != null) {
             if (stateAction.equals(PreState.REJECT_EVENT.toString())) event.setState(State.CANCELED);
-            if (stateAction.equals(PreState.PUBLISH_EVENT.toString())){
+            if (stateAction.equals(PreState.PUBLISH_EVENT.toString())) {
                 event.setState(State.PUBLISHED);
                 event.setPublishedOn(LocalDateTime.now());
             }

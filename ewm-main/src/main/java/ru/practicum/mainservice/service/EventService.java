@@ -28,5 +28,6 @@ public interface EventService {
     Event patchEventByUser(Long eventId, Long userId, UpdateEventAdminRequest updateEventAdminRequest);
 
     List<Event> searchEventsComp(EventDtoForSearch request, HttpServletRequest httpServletRequest);
+
     void deleteEvent(Long id);
 }
