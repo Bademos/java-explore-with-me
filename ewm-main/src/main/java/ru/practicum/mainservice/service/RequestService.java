@@ -11,7 +11,6 @@ public interface RequestService {
 
     EventRequestStatusUpdateResult patchRequestsByUserIdAndEventId(Long userId, Long eventId, EventRequestStatusUpdateRequest updateRequest);
 
-
     List<Request> getAllByEventAndUser(Long eventId, Long userId);
 
     Request cancelRequest(Long requestId, Long userId);

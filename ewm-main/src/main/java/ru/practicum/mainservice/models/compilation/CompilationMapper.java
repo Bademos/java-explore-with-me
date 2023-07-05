@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class CompilationMapper {
     public Compilation makeCompilationFromDto(CompilationDtoIn compilationDtoIn, Set<Event> eventSets) {
         return Compilation.builder()
-                .pinned(compilationDtoIn.getPinned())
+                .pinned(compilationDtoIn.isPinned())
                 .title(compilationDtoIn.getTitle())
                 .events(eventSets)
                 .build();

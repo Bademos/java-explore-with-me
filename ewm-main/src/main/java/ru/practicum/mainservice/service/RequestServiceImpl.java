@@ -18,6 +18,7 @@ import ru.practicum.mainservice.repository.EventRepository;
 import ru.practicum.mainservice.repository.RequestRepository;
 import ru.practicum.mainservice.repository.UserRepository;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class RequestServiceImpl implements RequestService {
     RequestRepository requestRepository;
@@ -164,4 +166,29 @@ public class RequestServiceImpl implements RequestService {
                 () -> new NotFoundException("There is no request with id:" + requestId + " in db")
         );
     }
-}
+
+
+    private void requestExistCheck(Long eventId, Long userId) {
+        if (requestRepository.existsByEventIdAndRequesterId(eventId, userId)) {
+            throw new ConflictException("Request is already exist");
+        }
+    }
+
+    private void requestorCheck(Long eventId, Long userId) {
+        if (requestRepository.existsByEventIdAndRequesterId(eventId, userId)) {
+            throw new ConflictException("Request is already exist");
+        }
+    }
+
+    private void isPublishedCheck(Event event) {
+        if (!event.getState().equals(State.PUBLISHED)) {
+            throw new ConflictException("The event is published");
+        }
+    }
+
+    private void limitParticipiantsCheck(Event event) {
+        if (event.getParticipantLimit() != 0 && event.getParticipantLimit() <= event.getConfirmedRequests())
+            throw new ConflictException("Limit of paticipiants is over");
+
+        }
+    }

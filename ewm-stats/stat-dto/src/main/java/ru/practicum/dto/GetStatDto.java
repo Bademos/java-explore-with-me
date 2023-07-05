@@ -12,12 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class GetStatDto {
-    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ConstantsShare.datePattern)
-    //@DateTimeFormat(pattern = ConstantsShare.datePattern)
     private String start;
 
-    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ConstantsShare.datePattern)
-    //@DateTimeFormat(pattern = ConstantsShare.datePattern)
     private String end;
 
     private List<String> uris;

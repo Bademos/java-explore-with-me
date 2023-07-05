@@ -10,6 +10,7 @@ import ru.practicum.mainservice.models.request.RequestDto;
 import ru.practicum.mainservice.models.request.RequestMapper;
 import ru.practicum.mainservice.service.RequestService;
 
+import javax.validation.constraints.Positive;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +23,8 @@ public class PrivateRequestController {
     RequestService requestService;
 
     @GetMapping
-    public List<RequestDto> getRequestsByUser(@PathVariable Long userId) {
+    public List<RequestDto> getRequestsByUser(@PathVariable @Positive Long userId) {
+        log.info("Got reguest for all participation requests of user with id:{}", userId);
         return requestService.getAllByUser(userId).stream()
                 .map(RequestMapper::makeRequestDto)
                 .collect(Collectors.toList());
@@ -30,15 +32,15 @@ public class PrivateRequestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RequestDto addRequest(@PathVariable Long userId,
+    public RequestDto addRequest(@PathVariable @Positive Long userId,
                                  @RequestParam(name = "eventId") Long eventId) {
         log.info("Got request for paticipation request for user with id:{} and event with id:{}", userId, eventId);
         return RequestMapper.makeRequestDto(requestService.addRequest(eventId, userId));
     }
 
     @PatchMapping("/{requestId}/cancel")
-    public RequestDto cancelRequest(@PathVariable Long userId,
-                                    @PathVariable Long requestId) {
+    public RequestDto cancelRequest(@PathVariable @Positive Long userId,
+                                    @PathVariable @Positive Long requestId) {
         log.info("Got request for updating request for user with id:{} and event with id:{}", userId, requestId);
         return RequestMapper.makeRequestDto(requestService.cancelRequest(requestId, userId));
     }

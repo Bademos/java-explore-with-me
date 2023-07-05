@@ -23,7 +23,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Event findByIdAndStateIs(Long eventId, State state);
 
     List<Event> findEventsByInitiatorIdInAndStateInAndCategoryIdInAndEventDateIsAfterAndEventDateIsBefore(
-            List<Long> initiatorIds, State[] states, List<Long> categoryIds,
+            List<Long> initiatorIds, List<State> states, List<Long> categoryIds,
             LocalDateTime start, LocalDateTime end, Pageable pageable);
 
     List<Event> searchAllByAnnotationAndCategoryIdInAndStateIsAndEventDateIsAfterAndEventDateIsBefore(

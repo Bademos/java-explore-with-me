@@ -14,7 +14,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CompilationDtoIn {
 
-    Boolean pinned = false;
+    boolean pinned;
+
 
     @NotBlank
     @Size(max = 50)

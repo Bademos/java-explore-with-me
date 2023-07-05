@@ -12,11 +12,13 @@ import ru.practicum.mainservice.exceptions.NotFoundException;
 import ru.practicum.mainservice.models.user.User;
 import ru.practicum.mainservice.repository.UserRepository;
 
+import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Slf4j
 public class UserServiceImpl implements UserService {
@@ -35,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getUserByListOfId(List<Long> list, int from, int size) {
-        log.info("gettin usersby list id{}, from:{}, with size{}", list, from, size);
+        log.info("gettin users by list id {}, from:{}, with size{}", list, from, size);
         from /= size;
         PageRequest pr = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "id"));
         if (list == null) {

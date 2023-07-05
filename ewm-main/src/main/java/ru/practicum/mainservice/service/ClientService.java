@@ -6,6 +6,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import ru.practicum.dto.ConstantsShare;
 import ru.practicum.dto.GetStatDto;
 import ru.practicum.dto.HitDto;
 import ru.practicum.dto.ViewStatDto;
+import ru.practicum.mainservice.MainConstantShare;
 import ru.practicum.mainservice.exceptions.ServerStatException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,10 +29,18 @@ import java.util.List;
 
 @Service
 @Slf4j
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ClientService {
-    StatClient statClient = new StatClient("http://stats-server:9090", new RestTemplateBuilder());
-    String appName = "ewm-main";
+    //@Value("${stats-server.url}") String url;
+    @Value(value = "${app.name}")
+    String appName;
+
+    final StatClient statClient = new StatClient(MainConstantShare.HTTP_SERVER_TEST, new RestTemplateBuilder());
+
+
+
+    //String appName = "ewm-main";
+
 
 
     public void addView(HttpServletRequest request) {
@@ -43,7 +54,7 @@ public class ClientService {
 
     public ResponseEntity<Object> requestStatFromStatService(String uri) {
          GetStatDto viewStatsRequest = GetStatDto.builder()
-                 .start(LocalDateTime.of(2022, 02, 24, 5, 0).format(DateTimeFormatter.ofPattern(ConstantsShare.datePattern)))
+                 .start(MainConstantShare.START_DATE_STRING)
                  .end(LocalDateTime.now().format(DateTimeFormatter.ofPattern(ConstantsShare.datePattern)))
                  .uris(List.of(uri))
                  .unique(true)

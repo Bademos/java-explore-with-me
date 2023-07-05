@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainservice.models.compilation.dto.CompilationDtoOut;
 import ru.practicum.mainservice.models.compilation.CompilationMapper;
 import ru.practicum.mainservice.service.CompilationService;
+
+import javax.validation.constraints.Positive;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,7 +22,8 @@ public class PublicCompilationController {
     CompilationService compilationService;
 
     @GetMapping("/{compId}")
-    public CompilationDtoOut getCompilation(@PathVariable Long compId) {
+    public CompilationDtoOut getCompilation(@PathVariable @Positive Long compId) {
+        log.info("Got request for compilation with id:{}", compId);
         return CompilationMapper.makeDtoFromCompilation(compilationService.getCompilationById(compId));
     }
 
@@ -28,6 +31,7 @@ public class PublicCompilationController {
     public List<CompilationDtoOut> getCompilations(@RequestParam(name = "pinned", required = false) Boolean pinned,
                                                     @RequestParam(name = "from", defaultValue = "0") int from,
                                                     @RequestParam(name = "size", defaultValue = "10") int size) {
+        log.info("Got request for all compilations");
         return compilationService.getAllCompilation(pinned, from, size).stream()
                 .map(CompilationMapper::makeDtoFromCompilation)
                 .collect(Collectors.toList());

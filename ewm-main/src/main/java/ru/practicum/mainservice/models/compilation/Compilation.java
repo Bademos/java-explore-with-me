@@ -9,7 +9,8 @@ import ru.practicum.mainservice.models.event.Event;
 import javax.persistence.*;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)

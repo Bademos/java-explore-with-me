@@ -8,13 +8,16 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.ConstantsShare;
+import ru.practicum.mainservice.models.event.dto.EventDtoForSearch;
 import ru.practicum.mainservice.models.event.dto.EventFullDto;
 import ru.practicum.mainservice.models.event.EventMapper;
 import ru.practicum.mainservice.models.event.dto.UpdateEventAdminRequest;
 import ru.practicum.mainservice.service.EventService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
+import java.net.http.HttpRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,9 +47,24 @@ public class AdminEventController {
                                              @RequestParam(name = "onlyAvailable", required = false) Boolean onlyAvailable,
                                              @RequestParam(name = "sort", required = false) String sort,
                                              @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                             @RequestParam(name = "size", defaultValue = "10") Integer size) {
+                                             @RequestParam(name = "size", defaultValue = "10") Integer size,
+                                             HttpServletRequest httpRequest) {
         log.info("got request for list of events");
-        return eventService.searchEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size).stream()
+        EventDtoForSearch request = EventDtoForSearch.builder()
+                .start(rangeStart)
+                .end(rangeEnd)
+                .query(text)
+                .categoryId(categories)
+                .paid(paid)
+                .sort(sort)
+                .onlyAvailable(onlyAvailable)
+                .from(from)
+                .size(size)
+                .build();
+        log.info("Got request for search events in range between {} and {}.Caterories for searching:{}", rangeStart, rangeEnd, categories);
+        log.info("There is request:{}", request);
+
+        return eventService.searchEventsComp(request, null).stream()
                 .map(EventMapper::makeFullDto)
                 .collect(Collectors.toList());
     }

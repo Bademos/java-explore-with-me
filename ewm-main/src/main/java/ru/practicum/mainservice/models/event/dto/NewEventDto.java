@@ -44,7 +44,7 @@ public class NewEventDto {
     boolean paid;
 
     @PositiveOrZero
-    private int participantLimit = 0;
+    int participantLimit;
 
-    private boolean requestModeration = true;
+    boolean requestModeration = true;
 }

@@ -15,6 +15,7 @@ import ru.practicum.mainservice.service.CompilationService;
 import ru.practicum.mainservice.service.EventService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,6 +32,7 @@ public class AdminCompilationController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CompilationDtoOut addCompilation(@RequestBody @Valid CompilationDtoIn compilationDtoIn) {
+        log.info("Got request for adding new compilation:{}", compilationDtoIn);
         if (compilationDtoIn.getEvents() != null) {
             Set<Event> events = compilationDtoIn
                     .getEvents()
@@ -45,7 +47,7 @@ public class AdminCompilationController {
     }
 
     @PatchMapping("/{compId}")
-    public CompilationDtoOut updateCompilation(@PathVariable Long compId,
+    public CompilationDtoOut updateCompilation(@PathVariable @Positive Long compId,
                                                @RequestBody @Valid CompilationDtoUpd compilationDtoIn) {
         log.info("get updating {} for compilation with id{}", compilationDtoIn, compId);
         return CompilationMapper.makeDtoFromCompilation(compilationService.updateCompilation(compilationDtoIn, compId));
@@ -53,7 +55,8 @@ public class AdminCompilationController {
 
     @DeleteMapping("/{compId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCompilation(@PathVariable Long compId) {
+    public void deleteCompilation(@PathVariable @Positive Long compId) {
+        log.info("Got request to delete compilation with id:{}", compId);
         compilationService.deleteCompilation(compId);
     }
 }

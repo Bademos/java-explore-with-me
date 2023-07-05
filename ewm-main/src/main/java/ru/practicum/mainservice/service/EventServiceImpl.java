@@ -3,6 +3,7 @@ package ru.practicum.mainservice.service;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,9 @@ import ru.practicum.mainservice.exceptions.NotFoundException;
 import ru.practicum.mainservice.models.category.Category;
 import ru.practicum.mainservice.models.event.Event;
 import ru.practicum.mainservice.models.event.EventMapper;
+import ru.practicum.mainservice.models.event.PreState;
 import ru.practicum.mainservice.models.event.State;
+import ru.practicum.mainservice.models.event.dto.EventDtoForSearch;
 import ru.practicum.mainservice.models.event.dto.NewEventDto;
 import ru.practicum.mainservice.models.event.dto.UpdateEventAdminRequest;
 import ru.practicum.mainservice.models.user.User;
@@ -21,6 +24,8 @@ import ru.practicum.mainservice.repository.CategoryRepository;
 import ru.practicum.mainservice.repository.EventRepository;
 import ru.practicum.mainservice.repository.UserRepository;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +34,15 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
+@Transactional
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class EventServiceImpl implements EventService {
     EventRepository eventRepository;
     UserRepository userRepository;
     CategoryRepository categoryRepository;
+    ClientService clientService;
+
 
     @Override
     public Event getEvent(Long id) {
@@ -42,16 +51,14 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<Event> getListOfEvents(int from, int size) {
-        from /= size;
-        PageRequest pr = PageRequest.of(from, size, MainConstantShare.sortDesc);
+        PageRequest pr = PageRequest.of(from / size, size, MainConstantShare.SORT_DESC);
         return eventRepository.findAll(pr).stream().collect(Collectors.toList());
     }
 
 
     @Override
     public List<Event> getListOfEventsByUser(Long userID, int from, int size) {
-        from /= size;
-        PageRequest pr = PageRequest.of(from, size, MainConstantShare.sortDesc);
+        PageRequest pr = PageRequest.of(from / size, size, MainConstantShare.SORT_DESC);
         return eventRepository.findByInitiatorId(userID, pr);
     }
 
@@ -98,9 +105,14 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event getEventSt(Long eventId) {
-        Event event = getEvent(eventId);
-        //if (event.getViews() == null) event.setViews(0L);
+    public Event getEventSt(Long eventId, HttpServletRequest httpRequest) {
+        Event event =  getEvent(eventId);
+        clientService.addView(httpRequest);
+        String uri = httpRequest.getRequestURI();
+        long hits = clientService.getUniqueHits(uri);
+        log.info("uri:{} and hits {} and alt:{}", uri, hits, httpRequest.getRequestURI());
+        event.setViews(hits);
+        eventRepository.save(event);
         return event;
     }
 
@@ -124,26 +136,29 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<Event> searchEvents(String query, List<Long> categoryIds, Boolean pais, LocalDateTime start,
+    public List<Event> searchEvents(String query, List<Long> categoryIds, Boolean paid, LocalDateTime start,
                                     LocalDateTime end, Boolean onlyAvailable, String sort, Integer from,
-                                    Integer size) {
+                                    Integer size, HttpServletRequest httpRequest) {
+        if (httpRequest != null) {
+            clientService.addView(httpRequest);
+        }
         Pageable pageable = PageRequest.of(from / size, size);
 
-        if (query == null && pais == null
+        if (query == null && paid == null
                 && start == null && end == null
                 && onlyAvailable == null && sort == null
                 && categoryIds == null) {
             return eventRepository.findAll(pageable).toList();
         }
 
-        if (query == null && pais == null && start == null && end == null
+        if (query == null && paid == null && start == null && end == null
                 && onlyAvailable == null
                 && sort == null
                 && categoryIds != null) {
             return eventRepository.findAllByCategoryIdIn(categoryIds, pageable);
         }
 
-        if (query == null && pais == null && onlyAvailable == null
+        if (query == null && paid == null && onlyAvailable == null
                 && sort == null
                 && categoryIds != null) {
             return eventRepository.findAllByCategoryIdIn(categoryIds, pageable);
@@ -176,8 +191,8 @@ public class EventServiceImpl implements EventService {
             }
         }
 
-        if (pais != null) {
-            if (pais) {
+        if (paid != null) {
+            if (paid) {
                 for (Event event : eventList) {
                     if (event.getPaid()) {
                         sortList.add(event);
@@ -196,8 +211,8 @@ public class EventServiceImpl implements EventService {
             }
         }
 
-        if (onlyAvailable != null) {
-            if (onlyAvailable) {
+        //if (onlyAvailable != null) {
+        if (onlyAvailable) {
                 for (Event event : eventList) {
                     if (event.getConfirmedRequests() < event.getParticipantLimit()) {
                         sortList.add(event);
@@ -206,7 +221,63 @@ public class EventServiceImpl implements EventService {
                 eventList.clear();
                 eventList.addAll(sortList);
             }
+       // }
+        return eventList;
+    }
+
+    @Override
+    public List<Event> searchEventsComp(EventDtoForSearch request, HttpServletRequest httpRequest) {
+        if (httpRequest != null) {
+            clientService.addView(httpRequest);
         }
+
+        timeRangeCheck(request);
+
+        Pageable pageable = PageRequest.of(request.getFrom()/ request.getSize(), request.getSize());
+
+        if (request.getQuery() == null && request.getPaid() == null
+                && request.getStart() == null && request.getEnd() == null
+                && request.getOnlyAvailable() == null && request.getSort() == null
+                && request.getCategoryId() == null) {
+            return eventRepository.findAll(pageable).toList();
+        }
+
+        if (request.getQuery() == null && request.getPaid() == null
+                && request.getStart() == null && request.getEnd() == null
+                && request.getOnlyAvailable() == null && request.getSort() == null
+                && request.getCategoryId() != null)  {
+            return eventRepository.findAllByCategoryIdIn(request.getCategoryId(), pageable);
+        }
+
+        if (request.getQuery() == null && request.getPaid() == null
+                && request.getOnlyAvailable() == null && request.getSort() == null
+                && request.getCategoryId() != null)  {
+            return eventRepository.findAllByCategoryIdIn(request.getCategoryId(), pageable);
+        }
+
+        List<Event> eventList = new ArrayList<>();
+        List<Event> sortList = new ArrayList<>();
+        if (request.getStart() == null && request.getEnd() == null) {
+            eventList = eventRepository.searchAllByAnnotationAndCategoryIdInAndStateIsAndEventDateIsAfter(request.getQuery(),
+                    request.getCategoryId(), State.PUBLISHED, LocalDateTime.now(), pageable);
+            if (eventList.size() == 0) {
+                eventList = eventRepository.searchAllByDescriptionAndCategoryIdInAndStateIsAndEventDateIsAfter(request.getQuery(),
+                        request.getCategoryId(), State.PUBLISHED, LocalDateTime.now(), pageable);
+            }
+        } else {
+            eventList = eventRepository
+                    .searchAllByAnnotationAndCategoryIdInAndStateIsAndEventDateIsAfterAndEventDateIsBefore(request.getQuery(),
+                            request.getCategoryId(), State.PUBLISHED, request.getStart(), request.getEnd(), pageable);
+            if (eventList.size() == 0) {
+                eventList = eventRepository
+                        .searchAllByDescriptionAndCategoryIdInAndStateIsAndEventDateIsAfterAndEventDateIsBefore(request.getQuery(),
+                                request.getCategoryId(), State.PUBLISHED, request.getStart(), request.getEnd(), pageable);
+            }
+        }
+
+        handleRequestPaid(request, eventList, sortList);
+
+        handleRequestNotAvailable(request, eventList, sortList);
         return eventList;
     }
 
@@ -235,10 +306,13 @@ public class EventServiceImpl implements EventService {
         String stateAction = upd.getStateAction();
 
         if (stateAction != null) {
-            if (stateAction.equals("CANCEL_REVIEW")) event.setState(State.CANCELED);
-            if (stateAction.equals("PUBLISH_EVENT")) event.setState(State.PUBLISHED);
-            if (stateAction.equals("REJECT_EVENT")) event.setState(State.CANCELED);
-            if (stateAction.equals("SEND_TO_REVIEW")) event.setState(State.PENDING);
+            if (stateAction.equals(PreState.REJECT_EVENT.toString())) event.setState(State.CANCELED);
+            if (stateAction.equals(PreState.PUBLISH_EVENT.toString())){
+                event.setState(State.PUBLISHED);
+                event.setPublishedOn(LocalDateTime.now());
+            }
+            if (stateAction.equals(PreState.CANCEL_REVIEW.toString())) event.setState(State.CANCELED);
+            if (stateAction.equals(PreState.SEND_TO_REVIEW.toString())) event.setState(State.PENDING);
         }
 
         if (!event.getState().equals(State.CANCELED)) {
@@ -275,11 +349,93 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    private void setState(String stateAction, Event event) {
+        if (stateAction != null) {
+            if (stateAction.equals(PreState.REJECT_EVENT.toString())) event.setState(State.CANCELED);
+            if (stateAction.equals(PreState.PUBLISH_EVENT.toString())){
+                event.setState(State.PUBLISHED);
+                event.setPublishedOn(LocalDateTime.now());
+            }
+            if (stateAction.equals(PreState.CANCEL_REVIEW.toString())) event.setState(State.CANCELED);
+            if (stateAction.equals(PreState.SEND_TO_REVIEW.toString())) event.setState(State.PENDING);
+        }
+    }
+
     private static void checkUpdatedTime(UpdateEventAdminRequest updateEventAdminRequest) {
         if (updateEventAdminRequest.getEventDate() != null) {
-            if (LocalDateTime.now().plusHours(1).isAfter(updateEventAdminRequest.getEventDate())) {
+            if (LocalDateTime.now().plusHours(MainConstantShare.HOURS_AFTER_EVENT).isAfter(updateEventAdminRequest.getEventDate())) {
                 throw new NotAvailableException("Event time is too late");
             }
         }
     }
-}
+
+
+    private void handleMainRequest(EventDtoForSearch request, List<Event> eventList, List<Event> sortList, Pageable pageable) {
+        if (request.getStart() == null && request.getEnd() == null) {
+            eventList = eventRepository.searchAllByAnnotationAndCategoryIdInAndStateIsAndEventDateIsAfter(request.getQuery(),
+                    request.getCategoryId(), State.PUBLISHED, LocalDateTime.now(), pageable);
+            if (eventList.size() == 0) {
+                eventList = eventRepository.searchAllByDescriptionAndCategoryIdInAndStateIsAndEventDateIsAfter(request.getQuery(),
+                        request.getCategoryId(), State.PUBLISHED, LocalDateTime.now(), pageable);
+            }
+        } else {
+            eventList = eventRepository
+                    .searchAllByAnnotationAndCategoryIdInAndStateIsAndEventDateIsAfterAndEventDateIsBefore(request.getQuery(),
+                            request.getCategoryId(), State.PUBLISHED, request.getStart(), request.getEnd(), pageable);
+            if (eventList.size() == 0) {
+                eventList = eventRepository
+                        .searchAllByDescriptionAndCategoryIdInAndStateIsAndEventDateIsAfterAndEventDateIsBefore(request.getQuery(),
+                                request.getCategoryId(), State.PUBLISHED, request.getStart(), request.getEnd(), pageable);
+            }
+        }
+    }
+
+
+
+
+
+
+    private void handleRequestNotAvailable(EventDtoForSearch request, List<Event> eventList, List<Event> sortList) {
+        if (request.getOnlyAvailable() != null) {
+            if (request.getOnlyAvailable()) {
+                for (Event event : eventList) {
+                    if (event.getConfirmedRequests() < event.getParticipantLimit()) {
+                        sortList.add(event);
+                    }
+                }
+                eventList.clear();
+                eventList.addAll(sortList);
+            }
+        }
+    }
+
+    private void handleRequestPaid(EventDtoForSearch request, List<Event> eventList, List<Event> sortList) {
+            if (request.getPaid() != null) {
+                if (request.getPaid()) {
+                    for (Event event : eventList) {
+                        if (event.getPaid()) {
+                            sortList.add(event);
+                        }
+                    }
+                    eventList.clear();
+                    eventList.addAll(sortList);
+                } else {
+                    for (Event event : eventList) {
+                        if (!event.getPaid()) {
+                            sortList.add(event);
+                        }
+                    }
+                    eventList.clear();
+                    eventList.addAll(sortList);
+                }
+            }
+        }
+
+        private void timeRangeCheck(EventDtoForSearch request) {
+            if (request.getStart() != null && request.getEnd() != null) {
+                if (request.getEnd().isBefore(request.getStart())) {
+                    throw new NotAvailableException("Incorrect time range");
+                }
+            }
+        }
+    }

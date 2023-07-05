@@ -32,6 +32,7 @@ public class AdminUsersController {
     public List<UserDto> getAllUsers(@RequestParam(name = "ids", required = false) List<Long> listId,
                                      @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero int from,
                                      @RequestParam(name = "size", defaultValue = "10") @Positive int size) {
+        log.info("Got request for all users");
         return userService.getUserByListOfId(listId, from, size).stream()
                 .map(UserMapper::makeUserDtoFromUser)
                 .collect(Collectors.toList());

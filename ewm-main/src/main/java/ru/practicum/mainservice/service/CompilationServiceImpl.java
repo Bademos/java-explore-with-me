@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.practicum.mainservice.MainConstantShare;
 import ru.practicum.mainservice.exceptions.NotFoundException;
 import ru.practicum.mainservice.models.compilation.Compilation;
 import ru.practicum.mainservice.models.compilation.dto.CompilationDtoUpd;
@@ -14,12 +15,14 @@ import ru.practicum.mainservice.models.event.Event;
 import ru.practicum.mainservice.repository.CompilationRepository;
 import ru.practicum.mainservice.repository.EventRepository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class CompilationServiceImpl implements CompilationService {
     CompilationRepository compilationRepository;
@@ -27,15 +30,11 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public List<Compilation> getAllCompilation(Boolean pinned, int from, int size) {
-        PageRequest pg = PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id"));
 
-        /*
         PageRequest pg = pinned == null
-                ? PageRequest.of(from/size, size, Sort.unsorted())
-                : PageRequest.of(from/size, size, Sort.by(Sort.Direction.ASC, "id"));
+                ? PageRequest.of(from/size, size)
+                : PageRequest.of(from/size, size, MainConstantShare.SORT_ASC);
 
-
-         */
         return compilationRepository.findAll(pg).toList();
     }
 

@@ -14,10 +14,12 @@ import ru.practicum.mainservice.models.category.dto.CategoryDto;
 import ru.practicum.mainservice.repository.CategoryRepository;
 import ru.practicum.mainservice.repository.EventRepository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class CategoryServiceImpl implements CategoryService {
     CategoryRepository categoryRepository;

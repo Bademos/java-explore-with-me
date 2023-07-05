@@ -11,12 +11,14 @@ import ru.practicum.mainservice.exceptions.NotFoundException;
 import ru.practicum.mainservice.models.event.Event;
 import ru.practicum.mainservice.models.event.EventMapper;
 import ru.practicum.mainservice.models.event.State;
+import ru.practicum.mainservice.models.event.dto.EventDtoForSearch;
 import ru.practicum.mainservice.models.event.dto.EventFullDto;
 import ru.practicum.mainservice.models.event.dto.EventShortDto;
 import ru.practicum.mainservice.service.ClientService;
 import ru.practicum.mainservice.service.EventService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +30,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class PublicEventController {
     EventService eventService;
-    ClientService clientService;
+    //ClientService clientService;
 
     @GetMapping
     public List<EventShortDto> findEvents(@RequestParam(name = "text", required = false) String text,
@@ -42,26 +44,35 @@ public class PublicEventController {
                                           @RequestParam(name = "size", defaultValue = "10") Integer size,
                                           HttpServletRequest httpRequest
     ) {
+
+        EventDtoForSearch request = EventDtoForSearch.builder()
+                .start(rangeStart)
+                .end(rangeEnd)
+                .query(text)
+                .categoryId(categories)
+                .paid(paid)
+                .sort(sort)
+                .onlyAvailable(onlyAvailable)
+                .from(from)
+                .size(size)
+                .build();
         log.info("Got request for search events in range between {} and {}.Caterories for searching:{}", rangeStart, rangeEnd, categories);
-        clientService.addView(httpRequest);
-        return eventService.searchEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size).stream()
+        log.info("There is request:{}", request);
+       /* return eventService.searchEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size, httpRequest).stream()
+                .map(EventMapper::makeShortDto)
+                .collect(Collectors.toList());*/
+        return eventService.searchEventsComp(request, httpRequest).stream()
                 .map(EventMapper::makeShortDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public EventFullDto getById(@PathVariable Long id, HttpServletRequest httpRequest) {
-        Event event = eventService.getEventSt(id);
-        clientService.addView(httpRequest);
-        String uri = httpRequest.getRequestURI();//.replaceAll("/$", "");
-        long hits = clientService.getUniqueHits(uri);
-        log.info("uri:{} and hits{} and alt:{}", uri, hits, httpRequest.getRequestURI());
-        event.setViews(hits);
-        eventService.addEvent(event);
+    public EventFullDto getById(@PathVariable @Positive Long id, HttpServletRequest httpRequest) {
+        log.info("Got request for event with id:{}", id);
+        Event event = eventService.getEventSt(id, httpRequest);
         if (!event.getState().equals(State.PUBLISHED)) {
-            throw new NotFoundException("Unfortunatly event is not published.");
+            throw new NotFoundException("Unfortunately event is not published.");
         }
-
         return EventMapper.makeFullDto(event);
     }
 }
