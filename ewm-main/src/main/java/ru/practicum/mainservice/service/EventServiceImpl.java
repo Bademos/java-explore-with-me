@@ -253,13 +253,7 @@ public class EventServiceImpl implements EventService {
 
     private void setState(String stateAction, Event event) {
         if (stateAction != null) {
-            if (stateAction.equals(PreState.REJECT_EVENT.toString())) event.setState(State.CANCELED);
-            if (stateAction.equals(PreState.PUBLISH_EVENT.toString())) {
-                event.setState(State.PUBLISHED);
-                event.setPublishedOn(LocalDateTime.now());
-            }
-            if (stateAction.equals(PreState.CANCEL_REVIEW.toString())) event.setState(State.CANCELED);
-            if (stateAction.equals(PreState.SEND_TO_REVIEW.toString())) event.setState(State.PENDING);
+           event.setState(PreState.from(stateAction).getState());
         }
     }
 

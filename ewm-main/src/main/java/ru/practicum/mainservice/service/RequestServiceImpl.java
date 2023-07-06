@@ -73,23 +73,14 @@ public class RequestServiceImpl implements RequestService {
                 () -> new NotFoundException("Event does not found")
         );
 
-        if (requestRepository.existsByEventIdAndRequesterId(eventId, userId)) {
-            throw new ConflictException("Request is already exist");
-        }
-
-        if (event.getInitiator().getId().equals(userId)) {
-            throw new ConflictException("Requestor cannot be initiator");
-        }
-        if (!event.getState().equals(State.PUBLISHED)) {
-            throw new ConflictException("The event is published");
-        }
-
-        if (event.getParticipantLimit() != 0 && event.getParticipantLimit() <= event.getConfirmedRequests())
-            throw new ConflictException("Limit of paticipiants is over");
-
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("User does not found")
         );
+        requestExistCheck(eventId, userId);
+        requestorCheck(event, userId);
+        isPublishedCheck(event);
+        limitParticipiantsCheck(event);
+
         log.info("User with id {} found , his name is ", userId, user.getName());
 
         if (!userId.equals(event.getInitiator().getId())) {
@@ -102,8 +93,8 @@ public class RequestServiceImpl implements RequestService {
 
             State requestStatus = (!event.getRequestModeration() || event.getParticipantLimit() == 0)
                     ? State.CONFIRMED : State.PENDING;
-
             request.setStatus(requestStatus);
+
             if (requestStatus.equals(State.CONFIRMED)) {
                 event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             }
@@ -120,7 +111,6 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new NotFoundException("User not found."));
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event not found"));
-
 
         List<Request> requestsEvent = requestRepository.findAllByEventId(eventId);
 
@@ -141,6 +131,7 @@ public class RequestServiceImpl implements RequestService {
                 requestListUpdateStatus.add(request);
             }
         }
+
         for (Request request : requestListUpdateStatus) {
             if (!request.getStatus().equals(State.CANCELED)) {
                 eventResultConstructor(eventRequestStatusUpdateResultDto, request);
@@ -174,9 +165,9 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
-    private void requestorCheck(Long eventId, Long userId) {
-        if (requestRepository.existsByEventIdAndRequesterId(eventId, userId)) {
-            throw new ConflictException("Request is already exist");
+    private void requestorCheck(Event event, Long userId) {
+        if (event.getInitiator().getId().equals(userId)) {
+            throw new ConflictException("Requestor cannot be initiator");
         }
     }
 
@@ -189,6 +180,5 @@ public class RequestServiceImpl implements RequestService {
     private void limitParticipiantsCheck(Event event) {
         if (event.getParticipantLimit() != 0 && event.getParticipantLimit() <= event.getConfirmedRequests())
             throw new ConflictException("Limit of paticipiants is over");
-
-        }
     }
+}
