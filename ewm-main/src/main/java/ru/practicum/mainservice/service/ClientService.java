@@ -33,6 +33,9 @@ public class ClientService {
     @Value(value = "${app.name}")
     String appName;
 
+    final String startDateString = LocalDateTime.of(2022, 2, 24, 5, 0).format(DateTimeFormatter.ofPattern(ConstantsShare.datePattern));
+
+
     final StatClient statClient = new StatClient(MainConstantShare.httpServer, new RestTemplateBuilder());
 
     public void addView(HttpServletRequest request) {
@@ -46,7 +49,7 @@ public class ClientService {
 
     public ResponseEntity<Object> requestStatFromStatService(String uri) {
          GetStatDto viewStatsRequest = GetStatDto.builder()
-                 .start(MainConstantShare.startDateString)
+                 .start(startDateString)
                  .end(LocalDateTime.now().format(DateTimeFormatter.ofPattern(ConstantsShare.datePattern)))
                  .uris(List.of(uri))
                  .unique(true)

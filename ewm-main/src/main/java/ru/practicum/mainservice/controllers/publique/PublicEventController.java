@@ -18,6 +18,7 @@ import ru.practicum.mainservice.service.EventService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,8 +39,8 @@ public class PublicEventController {
                                           @RequestParam(name = "rangeEnd", required = false) @DateTimeFormat(pattern = ConstantsShare.datePattern) LocalDateTime rangeEnd,
                                           @RequestParam(name = "onlyAvailable", required = false) Boolean onlyAvailable,
                                           @RequestParam(name = "sort", required = false) String sort,
-                                          @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                          @RequestParam(name = "size", defaultValue = "10") Integer size,
+                                          @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero Integer from,
+                                          @RequestParam(name = "size", defaultValue = "10") @Positive Integer size,
                                           HttpServletRequest httpRequest
     ) {
 

@@ -19,6 +19,7 @@ import ru.practicum.mainservice.service.RequestService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -34,8 +35,8 @@ public class PrivateEventController {
 
     @GetMapping
     public List<EventShortDto> getAllByUser(@PathVariable @Positive Long userId,
-                                            @RequestParam(name = "from", defaultValue = "0") int from,
-                                            @RequestParam(name = "size", defaultValue = "10") int size) {
+                                            @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero int from,
+                                            @RequestParam(name = "size", defaultValue = "10") @Positive int size) {
         return eventService.getListOfEventsByUser(userId, from, size).stream()
                 .map(EventMapper::makeShortDto)
                 .collect(Collectors.toList());

@@ -10,6 +10,7 @@ import ru.practicum.mainservice.models.compilation.CompilationMapper;
 import ru.practicum.mainservice.service.CompilationService;
 
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,8 +30,8 @@ public class PublicCompilationController {
 
     @GetMapping
     public List<CompilationDtoOut> getCompilations(@RequestParam(name = "pinned", required = false) Boolean pinned,
-                                                    @RequestParam(name = "from", defaultValue = "0") int from,
-                                                    @RequestParam(name = "size", defaultValue = "10") int size) {
+                                                    @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero int from,
+                                                    @RequestParam(name = "size", defaultValue = "10") @Positive int size) {
         log.info("Got request for all compilations");
         return compilationService.getAllCompilation(pinned, from, size).stream()
                 .map(CompilationMapper::makeDtoFromCompilation)
