@@ -1110,7 +1110,7 @@
 
 						},
 						"url": {
-							"raw": "{{baseUrl}}//users/:userId/comments/:commentId?text=PATCH PATCH First comment",
+							"raw": "{{baseUrl}}//users/:userId/comments/1?text=PATCH PATCH First comment",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1118,7 +1118,7 @@
 								"users",
 								":userId",
 								"comments",
-								":commentId?text=PATCH PATCH First comment"
+								"1?text=PATCH PATCH First comment"
 							],
 							"variable": [
 								{
