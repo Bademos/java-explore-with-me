@@ -1115,7 +1115,6 @@
 								"{{baseUrl}}"
 							],
 							"path": [
-								"",
 								"users",
 								":userId",
 								"comments",
