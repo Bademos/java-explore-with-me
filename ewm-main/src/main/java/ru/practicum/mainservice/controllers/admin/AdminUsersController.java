@@ -46,6 +46,11 @@ public class AdminUsersController {
         return UserMapper.makeUserDtoFromUser(userService.addUser(user));
     }
 
+    @GetMapping("/{id}")
+    public UserDto getUserById(@PathVariable Long id) {
+        return UserMapper.makeUserDtoFromUser(userService.getUserById(id));
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public UserDto deleteUser(@PathVariable @Positive Long id) {

@@ -141,6 +141,52 @@
 				},
 
 				{
+					"name": "Get user 135",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 201\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "*/*",
+								"type": "text"
+							}
+						],
+						"body": {
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/users/135",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"users",
+								"135"
+							]
+						}
+					},
+					"response": []
+				},
+
+				{
 					"name": "Get all users",
 					"event": [
 						{
@@ -183,6 +229,7 @@
 					},
 					"response": []
 				},
+
 
 				{
 					"name": "Category 1 create",
@@ -462,6 +509,51 @@
 								"1",
 								"events"
 
+							]
+						}
+					},
+					"response": []
+				},
+
+				{
+					"name": "Get event 106",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 201\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "*/*",
+								"type": "text"
+							}
+						],
+						"body": {
+						},
+						"url": {
+							"raw": "{{baseUrl}}/events/106",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"events",
+								"106"
 							]
 						}
 					},
