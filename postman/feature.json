@@ -27,7 +27,7 @@
 									"pm.test(\"Test user 'id' field\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('id');",
-									"    pm.expect(jsonData.id, '\"id\" must be 135').to.eql(135);",
+									"    pm.expect(jsonData.id, '\"id\" must be 136').to.eql(136);",
 									"});",
 									"pm.test(\"Test user 'email' field\", function () {",
 									"    var jsonData = pm.response.json();",
@@ -92,7 +92,7 @@
 									"pm.test(\"Test user 'id' field\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('id');",
-									"    pm.expect(jsonData.id, '\"id\" must be 136').to.eql(136);",
+									"    pm.expect(jsonData.id, '\"id\" must be 137').to.eql(137);",
 									"});",
 									"pm.test(\"Test user 'email' field\", function () {",
 									"    var jsonData = pm.response.json();",
@@ -377,12 +377,12 @@
 
 						},
 						"url": {
-							"raw": "{{baseUrl}}/users/135/events",
+							"raw": "{{baseUrl}}/users/136/events",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"/users/135/events"
+								"/users/136/events"
 							]
 						}
 					},
