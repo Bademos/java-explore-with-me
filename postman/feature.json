@@ -27,7 +27,7 @@
 									"pm.test(\"Test user 'id' field\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('id');",
-									"    pm.expect(jsonData.id, '\"id\" must be 1').to.eql(1);",
+									"    pm.expect(jsonData.id, '\"id\" must be 135').to.eql(135);",
 									"});",
 									"pm.test(\"Test user 'email' field\", function () {",
 									"    var jsonData = pm.response.json();",
@@ -92,7 +92,7 @@
 									"pm.test(\"Test user 'id' field\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('id');",
-									"    pm.expect(jsonData.id, '\"id\" must be 2').to.eql(2);",
+									"    pm.expect(jsonData.id, '\"id\" must be 136').to.eql(136);",
 									"});",
 									"pm.test(\"Test user 'email' field\", function () {",
 									"    var jsonData = pm.response.json();",
@@ -157,7 +157,7 @@
 									"pm.test(\"Test category 'id' field\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('id');",
-									"    pm.expect(jsonData.id, '\"id\" must be 1').to.eql(1);",
+									"    pm.expect(jsonData.id, '\"id\" must be 121').to.eql(121);",
 									"});"
 
 								],
@@ -239,7 +239,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"annotation\": \"first event as first expierence of life\",\n  \"category\": \"1\", \n  \"description\": \"booring meeting with naked virgins and fontains\", \n \"eventDate\": \"2024-07-09 01:52:41\", \n \"location\":{\"lat\":78.9014,\"lon\":59.57}, \n \"paid\":\"false\", \n \"participantLimit\":\"840\", \n \"requestModeration\":\"true\", \n \"title\":\"Minus accusamus illo distinctio sit.\"}"
+							"raw": "{\n    \"annotation\": \"first event as first expierence of life\",\n  \"category\": \"121\", \n  \"description\": \"booring meeting with naked virgins and fontains\", \n \"eventDate\": \"2024-07-09 01:52:41\", \n \"location\":{\"lat\":78.9014,\"lon\":59.57}, \n \"paid\":\"false\", \n \"participantLimit\":\"840\", \n \"requestModeration\":\"true\", \n \"title\":\"Minus accusamus illo distinctio sit.\"}"
 
 
 						},
