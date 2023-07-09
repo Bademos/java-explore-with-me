@@ -780,7 +780,6 @@
 								"{{baseUrl}}"
 							],
 							"path": [
-								"",
 								"users",
 								":userId",
 								"events",
@@ -828,7 +827,6 @@
 								"{{baseUrl}}"
 							],
 							"path": [
-								"",
 								"users",
 								":userId",
 								"events",
@@ -876,7 +874,6 @@
 								"{{baseUrl}}"
 							],
 							"path": [
-								"",
 								"users",
 								":userId",
 								"events",
@@ -1052,7 +1049,6 @@
 								"{{baseUrl}}"
 							],
 							"path": [
-								"",
 								"users",
 								":userId",
 								"events",
@@ -1171,7 +1167,6 @@
 								"{{baseUrl}}"
 							],
 							"path": [
-								"",
 								"users",
 								":userId",
 								"comments",
