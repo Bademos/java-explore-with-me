@@ -27,7 +27,7 @@
 									"pm.test(\"Test user 'id' field\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('id');",
-									"    pm.expect(jsonData.id, '\"id\" must be 136').to.eql(136);",
+									"    pm.expect(jsonData.id, '\"id\" must be 135').to.eql(135);",
 									"});",
 									"pm.test(\"Test user 'email' field\", function () {",
 									"    var jsonData = pm.response.json();",
@@ -92,7 +92,7 @@
 									"pm.test(\"Test user 'id' field\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('id');",
-									"    pm.expect(jsonData.id, '\"id\" must be 137').to.eql(137);",
+									"    pm.expect(jsonData.id, '\"id\" must be 136').to.eql(136);",
 									"});",
 									"pm.test(\"Test user 'email' field\", function () {",
 									"    var jsonData = pm.response.json();",
@@ -425,7 +425,7 @@
 									"pm.test(\"Test event 'id' field\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('id');",
-									"    pm.expect(jsonData.id, '\"id\" must be 1').to.eql(1);",
+									"    pm.expect(jsonData.id, '\"id\" must be 107').to.eql(107);",
 									"});"
 								],
 								"type": "text/javascript"
@@ -525,11 +525,11 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "2"
+									"value": "135"
 								},
 								{
 									"key": "eventId",
-									"value": "1"
+									"value": "106"
 								}
 							]
 						}
@@ -573,11 +573,11 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "2"
+									"value": "135"
 								},
 								{
 									"key": "eventId",
-									"value": "1"
+									"value": "106"
 								}
 
 
@@ -645,7 +645,7 @@
 								},
 								{
 									"key": "eventId",
-									"value": "1"
+									"value": "106"
 								}
 							]
 						}
@@ -693,7 +693,7 @@
 								},
 								{
 									"key": "eventId",
-									"value": "1"
+									"value": "106"
 								}
 							]
 						}
@@ -799,7 +799,7 @@
 							"variable": [
 								{
 									"key": "eventId",
-									"value": "1"
+									"value": "106"
 								}
 							]
 						}
@@ -860,7 +860,7 @@
 							"variable": [
 								{
 									"key": "eventId",
-									"value": "1"
+									"value": "106"
 								}
 							]
 						}
@@ -916,7 +916,7 @@
 								},
 								{
 									"key": "eventId",
-									"value": "1"
+									"value": "106"
 								}
 
 
@@ -983,7 +983,7 @@
 								},
 								{
 									"key": "eventId",
-									"value": "1"
+									"value": "106"
 								},
 								{
 									"key": "commentId",
@@ -1035,7 +1035,7 @@
 								},
 								{
 									"key": "eventId",
-									"value": "1"
+									"value": "106"
 								},
 								{
 									"key": "commentId",
@@ -1097,7 +1097,7 @@
 							"variable": [
 								{
 									"key": "eventId",
-									"value": "1"
+									"value": "106"
 								}
 							]
 						}
