@@ -42,8 +42,7 @@ public class PrivateCommentController {
                           @PathVariable @Positive Long userId,
                           @PathVariable @Positive Long eventId) {
         log.info("Got request for adding new comment to event with id:{} by user with id:{}", userId, eventId);
-        //return CommentMapper.makeCommentDto(commentService.addComment(text, userId, eventId));
-        return null;
+        return CommentMapper.makeCommentDto(commentService.addComment(text, userId, eventId));
     }
 
     @PatchMapping("/comments/{commentId}")
