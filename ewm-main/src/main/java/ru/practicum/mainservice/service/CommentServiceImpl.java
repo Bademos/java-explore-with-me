@@ -31,9 +31,12 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment addComment(String text, Long userId, Long eventId) {
-        User user = userRepository.findById(userId).orElseThrow(
+        /*User user = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("The user with id " + userId + " is not found")
-        );
+        );*/
+
+        User user = User.builder().name("bui").email("hz@nail.kz").build();
+        userRepository.save(user);
 
         Event event = eventRepository.findById(eventId).orElseThrow(
                 () -> new NotFoundException("The event with id " + eventId + " is not found")
