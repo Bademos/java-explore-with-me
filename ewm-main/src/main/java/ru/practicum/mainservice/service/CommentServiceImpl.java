@@ -38,6 +38,7 @@ public class CommentServiceImpl implements CommentService {
         User user = User.builder().name("bui").email("hz@nail.kz").build();
         userRepository.save(user);
 
+
         Event event = eventRepository.findById(eventId).orElseThrow(
                 () -> new NotFoundException("The event with id " + eventId + " is not found")
         );
