@@ -665,7 +665,6 @@
 								"{{baseUrl}}"
 							],
 							"path": [
-								"",
 								"users",
 								":userId",
 								"events",
