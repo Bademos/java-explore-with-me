@@ -669,7 +669,7 @@
 								":userId",
 								"events",
 								":eventId",
-								"comments"
+								"comments?text=First+comment"
 							],
 							"variable": [
 								{
