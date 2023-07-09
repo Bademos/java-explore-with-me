@@ -249,7 +249,7 @@
 								"{{baseUrl}}"
 							],
 							"path": [
-								"/users/1/events"
+								"/users/135/events"
 							]
 						}
 					},
@@ -361,7 +361,7 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "1"
+									"value": "135"
 								},
 								{
 									"key": "eventId",
@@ -429,7 +429,7 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "2"
+									"value": "136"
 								},
 								{
 									"key": "eventId",
@@ -525,7 +525,7 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "1"
+									"value": "135"
 								},
 								{
 									"key": "eventId",
@@ -700,7 +700,7 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "1"
+									"value": "135"
 								},
 								{
 									"key": "eventId",
@@ -767,7 +767,7 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "1"
+									"value": "135"
 								},
 								{
 									"key": "eventId",
@@ -819,7 +819,7 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "1"
+									"value": "135"
 								},
 								{
 									"key": "eventId",
