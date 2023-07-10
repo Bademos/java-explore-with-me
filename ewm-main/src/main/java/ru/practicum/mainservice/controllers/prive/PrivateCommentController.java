@@ -11,7 +11,6 @@ import ru.practicum.mainservice.models.comment.CommentDto;
 import ru.practicum.mainservice.models.comment.CommentMapper;
 import ru.practicum.mainservice.service.CommentService;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
@@ -38,7 +37,7 @@ public class PrivateCommentController {
 
     @PostMapping("/events/{eventId}/comments")
     @ResponseStatus(HttpStatus.CREATED)
-    CommentDto addComment(@RequestParam(defaultValue = "First comment") @Valid String text,
+    CommentDto addComment(@RequestParam(defaultValue = "First comment") String text,
                           @PathVariable @Positive Long userId,
                           @PathVariable @Positive Long eventId) {
         log.info("Got request for adding new comment to event with id:{} by user with id:{}", userId, eventId);
