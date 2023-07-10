@@ -11,4 +11,5 @@ public class MainConstantShare {
     public final Integer housrsAfterEvent = 1;
     public final String httpServerTest = "http://localhost:9090";
     public final String httpServer = "http://stats-server:9090";
+    public final Sort sortAscend = Sort.by(Sort.Direction.ASC, "id");
 }

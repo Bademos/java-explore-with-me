@@ -27,7 +27,7 @@ public class PublicCategoriesController {
     @GetMapping
     public List<CategoryDto> getAll(@RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                     @RequestParam(defaultValue = "10") @Positive int size) {
-        log.info("Got alll");
+        log.info("Got request for all categories");
         return categoryService.getCategories(from, size).stream()
                 .map(MakeCategory::makeDtoFromCategory)
                 .collect(Collectors.toList());

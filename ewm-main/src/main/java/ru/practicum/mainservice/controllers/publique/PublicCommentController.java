@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainservice.models.comment.CommentDto;
 import ru.practicum.mainservice.models.comment.CommentMapper;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequestMapping()
+@Validated
 public class PublicCommentController {
     CommentService commentService;
 

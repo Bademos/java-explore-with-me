@@ -48,6 +48,7 @@ public class AdminUsersController {
 
     @GetMapping("/{id}")
     public UserDto getUserById(@PathVariable Long id) {
+        log.info("Got request for user with id:{}", id);
         return UserMapper.makeUserDtoFromUser(userService.getUserById(id));
     }
 
